@@ -7,7 +7,7 @@ class Main {
     public static void main(String[] args) {
         def map = ['foo':['cose':[['foo':'bar'],['foo1':'bar1']]]]
         def path = 'foo.cose[1].foo1'
-/*        printNavigation(map, path)
+        printNavigation(map, path)
 
 
         map = [['foo':'bar'],['foo':'bar1']]
@@ -25,15 +25,17 @@ class Main {
         printNavigation(map, path)
 
 
+
+
         map = ['foo':['cose':['foo':['a','b','c']]]]
         path = 'foo.cose.foo[2]'
-        printNavigation(map, path)*/
+        printNavigation(map, path)
 
         map = ['foo':['cose':['foo':[['a':'a'],['b':'b'],['c':'c']]]]]
         path = 'foo.cose.foo[2]'
         printNavigation(map, path)
 
-        /*
+
         map = ['foo':'bar']
         path = 'banana'
         printNavigation(map, path)
@@ -59,10 +61,16 @@ class Main {
         println (JsonOutput.toJson(map))
         println "Path: " + path
         //println "Result: "+ navigate(map, path)
-        println "Result: "+ navigate(map, path)
+        List paths = path.split('\\.')
+        println "Result: "+ navigate(map, path,0,paths.size())
     }
 
-    static private def navigate(def item,def path,def index = 0){
+    static private def navigate(def item,def path,def currentDepht, def depth, def index = 0){
+        if (currentDepht > depth)
+            return item
+        else
+            currentDepht +=1
+
         def element
         List paths = path.split('\\.')
         String key = paths[0]
@@ -73,11 +81,11 @@ class Main {
             key = key.substring(0, key.indexOf('['))
         }
 
-        if (item instanceof Map)
-            element = navigate(item.get(key),path,index)
-        else if (item instanceof List)
-            element = navigate(item[index],path,index)
-        else
+        if (item instanceof Map) {
+                element = navigate(item.get(key), path,currentDepht,depth, index)
+        }else if (item instanceof List) {
+                element = navigate(item[index], path,currentDepht,depth, index)
+        } else
             element = item
 
         return element
