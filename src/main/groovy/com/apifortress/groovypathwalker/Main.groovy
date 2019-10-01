@@ -57,6 +57,12 @@ class Main {
         }
         // funzioni
 
+        result = obtainResult(rec, index, map, key, path, result)
+
+        return result
+    }
+
+    private static Object obtainResult(boolean rec, int index, map, String key, String path, result) {
         if (rec && index > 0) {
             if (map instanceof Map)
                 result = navigate(map.get(key)[index], path)
@@ -75,8 +81,7 @@ class Main {
         }
         if (!rec && index < 0)
             result = map.get(key)
-
-        return result
+        result
     }
 }
 
