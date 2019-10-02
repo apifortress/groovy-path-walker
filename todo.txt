@@ -38,3 +38,12 @@ e se l'utente vuole scrivere
 foo["foo-bar"]["name"]
 foo["foo-bar"].namne
 vanno gestite anche le dure robe sopra
+
+
+mappe:
+c['a']
+c["a"]
+c[var]
+foo[variabile]
+
+
