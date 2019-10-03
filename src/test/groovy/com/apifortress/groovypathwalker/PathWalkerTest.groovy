@@ -122,8 +122,9 @@ class PathWalkerTest {
 
     public void checkNavigationException(def item, String path) {
         path = PathWalker.sanifyPath(path)
-        List paths = PathWalker.paths(path)
-        String element = PathWalker.navigate(item, paths)
+        List paths = PathWalker.processPath(path)
+        //String element = PathWalker.navigate(item, paths)
+        String element = PathWalker.walk(item, path)
         assertTrue(element.startsWith("Exception"))
     }
 
@@ -133,8 +134,9 @@ class PathWalkerTest {
         if (scope) println "Scope: " + (JsonOutput.toJson(scope))
         println "Path: " + path
         path = PathWalker.sanifyPath(path)
-        List paths = PathWalker.paths(path)
-        def element = PathWalker.navigate(item, paths, scope)
+        List paths = PathWalker.processPath(path)
+        //def element = PathWalker.navigate(item, paths, scope)
+        def element = PathWalker.walk(item,path,scope)
         println "Result: " + element
         assertEquals(expected,element)
     }

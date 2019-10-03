@@ -6,7 +6,13 @@ import java.util.regex.Pattern
 
 class PathWalker {
 
-    static public def navigate(def item,def paths, def scope = null){
+    public static def walk(def item,def path, def scope = null){
+        def sanifiedPath = PathWalker.sanifyPath(path)
+        List paths = PathWalker.processPath(sanifiedPath)
+        return processWalk(item, paths, scope)
+    }
+
+    private static def processWalk(def item, def paths, def scope = null){
         def element,key
 
         if (!item)
@@ -28,7 +34,7 @@ class PathWalker {
         if (item instanceof Map && key != null
                 || item instanceof String && key != null) {
             try {
-                element = navigate(item.get(key), paths, scope)
+                element = processWalk(item.get(key), paths, scope)
             } catch (Exception ex) {
                 element = "Exception: " + ex.toString()
             }
@@ -107,7 +113,7 @@ class PathWalker {
     }
 
     @CompileStatic
-    private static List paths(String path) {
+    public static List processPath(String path) {
         List paths = path.split('\\.').toList()
         return paths
     }
