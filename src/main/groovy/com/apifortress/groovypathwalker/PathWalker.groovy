@@ -22,7 +22,7 @@ class PathWalker {
             try {
                 element = navigate(item.get(key), paths)
             } catch (Exception ex) {
-                element = ex.message
+                element = "Exception: " + ex.toString()
             }
         } else
             element = item

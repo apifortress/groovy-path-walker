@@ -1,6 +1,4 @@
-e se invece del contatore....uso il path come lista e quando la lista è vuota esco ?
 
-gestire path non previsti.
 
 {
 "foo":{
