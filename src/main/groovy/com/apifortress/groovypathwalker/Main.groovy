@@ -17,7 +17,18 @@ class Main {
         test10()
         test11()
         test12()
-        //test13()
+        test13()
+        test14()
+    }
+
+    private static void test14() {
+        def map = ['foo': ['cose': ['foo': ['foo1': 'bar1']]]]
+        def path = 'foo.cose.foo.foo1'
+        //println map.foo.cose.foo.foo1.ciccio
+        //def mp = ["TopicName" : "Maps", "TopicDescription" : "Methods in Maps"]
+        //println(map.containsKey("cose"));
+        //println(mp.containsKey("Topic"));
+        printNavigation(map, path)
     }
 
     private static void test13() {
@@ -114,7 +125,8 @@ class Main {
         path = PathWalker.sanifyPath(path)
         //println "NEW Path: " + path
         List paths = PathWalker.paths(path)
-        println "Result: "+ PathWalker.navigate(item, paths,paths.size())
+        //println "Result: "+ PathWalker.navigate(item, paths,paths.size())
+        println "Result: "+ PathWalker.navigate(item, paths)
     }
 
 

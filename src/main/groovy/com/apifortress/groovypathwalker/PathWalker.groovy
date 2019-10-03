@@ -1,43 +1,47 @@
 package com.apifortress.groovypathwalker
 
 class PathWalker {
-    static public def navigate(def item,def paths, def depth=0,def currentDepht=0, def index = 0){
 
-        def element
+    static public def navigate(def item,def paths){
 
-        if (currentDepht > depth)
+        if (paths.size() <= 0)
             return item
-        else
-            currentDepht +=1
 
-        def key, skip
-        (item, key, index, skip) = keyIndexItemSkipNull(paths, currentDepht, item, index)
+        def element,key,index
+        (paths,key) = currentKey(paths, key)
+
+        if (key?.contains('[') && key?.contains(']')) {
+            (key, index) = sanifyKeyListIndex(key)
+            item = itemFromList(key, item, index)
+            (paths,key) = currentKey(paths, key)
+        }
 
         if (item instanceof Map && key != null) {
-            //if (skip == true && item.get(key) == null)
-                element = navigate(item.get(key), paths, depth, currentDepht, index)
-            //else
-             //   element = item
+            element = navigate(item.get(key), paths)
         } else
             element = item
 
         return element
     }
 
-    private static List keyIndexItemSkipNull(paths, currentDepht, item, int index) {
-        boolean skip = false
-        String key = paths[currentDepht - 1]
-        if (key?.contains('[') && key?.contains(']')) {
-            index = key.substring(key.indexOf('[') + 1, key.indexOf(']')) as int
-            key = key.substring(0, key.indexOf('['))
-            if (key != '')
-                item = item.get(key)
-            item = item[index]
-            key = paths[currentDepht]
-        }
-        if (key?.contains('?'))
-            skip = true
-        [item, key, index,skip]
+    private static Object itemFromList(key, item, index) {
+        if (key != '')
+            item = item.get(key)
+        item = item[index]
+        item
+    }
+
+    private static List sanifyKeyListIndex(key) {
+        def index
+        index = key.substring(key.indexOf('[') + 1, key.indexOf(']')) as int
+        key = key.substring(0, key.indexOf('['))
+        [key, index]
+    }
+
+    private static def currentKey(paths, key) {
+        if (paths.size() > 0)
+            key = paths.remove(0)
+        return [paths,key]
     }
 
     private static List paths(String path) {
