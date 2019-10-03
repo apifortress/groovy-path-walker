@@ -5,7 +5,7 @@ import org.junit.Test
 
 import static org.junit.Assert.*
 
-class pathWalkerTests {
+class PathWalkerTest {
     @Test
     public void testPlain() {
         def map = ['foo': ['cose': ['foo': ['foo1': 'bar1']]]]
