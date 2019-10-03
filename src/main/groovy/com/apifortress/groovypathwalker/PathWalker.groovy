@@ -18,8 +18,13 @@ class PathWalker {
 
         if (item instanceof Map && key != null) {
             element = navigate(item.get(key), paths)
-        }
-        else
+        } else if (item instanceof String && key != null) {
+            try {
+                element = navigate(item.get(key), paths)
+            } catch (Exception ex) {
+                element = ex.message
+            }
+        } else
             element = item
 
         return element
