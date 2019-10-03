@@ -61,6 +61,7 @@ class PathWalker {
     private static String sanifyPath(String path) {
         path = path.replaceAll("\\[\"(.*?)\"\\]", '.$1')
         path = path.replaceAll("\\[\'(.*?)\'\\]", '.$1')
+        path = path.replaceAll("\\?", '')
         path
     }
 }

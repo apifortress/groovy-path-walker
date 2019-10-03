@@ -7,6 +7,20 @@ import static org.junit.Assert.*
 
 class pathWalkerTests {
     @Test
+    public void test16() {
+        def map = ['foo': ['cose': ['foo': ['foo1': 'bar1']]]]
+        def path = 'foo.cose.fo?.foo1'
+        printNavigation(map, path)
+        checkNavigation(map, path, null)
+    }
+    @Test
+    public void test15() {
+        def map = ['foo': ['cose': ['foo': ['foo1': 'bar1']]]]
+        def path = 'foo.cose.foo?.foo1'
+        printNavigation(map, path)
+        checkNavigation(map, path, 'bar1')
+    }
+    @Test
     public void test14() {
         def map = ['foo': ['cose': ['foo': ['foo1': 'bar1']]]]
         def path = 'foo.cose.foo.foo1'
