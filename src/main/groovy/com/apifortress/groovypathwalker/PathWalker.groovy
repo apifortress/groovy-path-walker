@@ -1,24 +1,26 @@
 package com.apifortress.groovypathwalker
 
+import java.util.regex.Pattern
+
 class PathWalker {
 
     static public def navigate(def item,def paths){
+        def element,key
 
         if (paths.size() <= 0)
-            return item
-
-        def element,key,index
-        (key,paths) = currentKey(paths)
-
-        if (key?.contains('[') && key?.contains(']')) {
-            (key, index) = sanifyKeyListIndex(key)
-            item = itemFromList(key, item, index)
-            (key,paths) = currentKey(paths)
+            element =item
+        else {
+            (key, paths) = currentKey(paths)
+            (key, paths, item) = navigateList(key, paths, item)
+            element = navigateMap(item, key, paths, element)
         }
 
-        if (item instanceof Map && key != null) {
-            element = navigate(item.get(key), paths)
-        } else if (item instanceof String && key != null) {
+        return element
+    }
+
+    private static Object navigateMap(item, key, paths, element) {
+        if (item instanceof Map && key != null
+                || item instanceof String && key != null) {
             try {
                 element = navigate(item.get(key), paths)
             } catch (Exception ex) {
@@ -26,8 +28,35 @@ class PathWalker {
             }
         } else
             element = item
+        element
+    }
 
-        return element
+    private static def navigateList(def key, def paths, def item){
+        String regex = "\\w*\\[\\d*\\]"
+        def index
+
+        if (Pattern.matches(regex, key)) {
+            (key, index) = sanifyKeyListIndex(key)
+            item = itemFromList(key, item, index)
+            (key,paths) = currentKey(paths)
+            return [key,paths,item]
+        } else {
+            return [key,paths,item]
+        }
+    }
+
+    private static def navigateVariables(def key, def paths, def item){
+        String regex = '\\$\\D*\\$'
+        def index
+
+        if (Pattern.matches(regex, key)) {
+            (key, index) = sanifyKeyListIndex(key)
+            item = itemFromList(key, item, index)
+            (key,paths) = currentKey(paths)
+            return [key,paths,item]
+        } else {
+            return [key,paths,item]
+        }
     }
 
     private static Object itemFromList(key, item, index) {
@@ -58,9 +87,10 @@ class PathWalker {
         paths
     }
 
-    private static String sanifyPath(String path) {
+    public static String sanifyPath(String path) {
         path = path.replaceAll("\\[\"(.*?)\"\\]", '.$1')
         path = path.replaceAll("\\[\'(.*?)\'\\]", '.$1')
+        path = path.replaceAll("\\[(\\D*)\\]", '.\\$$1\\$')
         path = path.replaceAll("\\?", '')
         path
     }
