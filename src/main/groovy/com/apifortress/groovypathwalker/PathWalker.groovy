@@ -8,17 +8,18 @@ class PathWalker {
             return item
 
         def element,key,index
-        (paths,key) = currentKey(paths, key)
+        (key,paths) = currentKey(paths)
 
         if (key?.contains('[') && key?.contains(']')) {
             (key, index) = sanifyKeyListIndex(key)
             item = itemFromList(key, item, index)
-            (paths,key) = currentKey(paths, key)
+            (key,paths) = currentKey(paths)
         }
 
         if (item instanceof Map && key != null) {
             element = navigate(item.get(key), paths)
-        } else
+        }
+        else
             element = item
 
         return element
@@ -38,10 +39,13 @@ class PathWalker {
         [key, index]
     }
 
-    private static def currentKey(paths, key) {
+    private static def currentKey(paths) {
+        def key
         if (paths.size() > 0)
             key = paths.remove(0)
-        return [paths,key]
+        else
+            key == null
+        return [key,paths]
     }
 
     private static List paths(String path) {
