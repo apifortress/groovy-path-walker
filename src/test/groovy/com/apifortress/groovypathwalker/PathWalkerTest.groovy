@@ -8,9 +8,9 @@ import static org.junit.Assert.*
 class PathWalkerTest {
     @Test
     public void testPlain() {
-        def map = ['foo': ['cose': ['foo': ['foo1': 'bar1']]]]
-        def path = 'foo.cose.foo.foo1'
-        checkNavigation(map,path,'bar1')
+        def map = ['payload':['foo': ['cose': ['foo': ['foo1': 'bar1']]]]]
+        def path = 'payload.foo.cose.foo.foo1'
+        checkNavigation(null,path,'bar1',map)
     }
     @Test
     public void testListInMidle() {
@@ -106,6 +106,19 @@ class PathWalkerTest {
         def path = 'a.b.c[var]'
         checkNavigation(map, path, 'bar1',scope)
     }
+    @Test
+    public void testPlainScope() {
+        def map = ['payload':['foo': ['cose': ['foo': ['foo1': 'bar1']]]],'var':'val']
+        def path = 'payload.foo.cose.foo.foo1'
+        checkNavigation(null,path,'bar1',map)
+    }
+
+    @Test
+    public void testPlainScopeVar() {
+        def map = ['payload':['foo': ['cose': ['foo': ['foo1': 'bar1']]]],'var':'foo1']
+        def path = 'payload.foo.cose.foo[var]'
+        checkNavigation(null,path,'bar1',map)
+    }
 
     public void checkNavigationException(def item, String path) {
         path = PathWalker.sanifyPath(path)
@@ -116,13 +129,13 @@ class PathWalkerTest {
 
     public void checkNavigation(def item, String path, def expected,def scope = null) {
         println "************************"
-        println (JsonOutput.toJson(item))
+        if (item)  println "Item: " + (JsonOutput.toJson(item))
         if (scope) println "Scope: " + (JsonOutput.toJson(scope))
         println "Path: " + path
         path = PathWalker.sanifyPath(path)
         List paths = PathWalker.paths(path)
         def element = PathWalker.navigate(item, paths, scope)
-        println element
+        println "Result: " + element
         assertEquals(expected,element)
     }
 

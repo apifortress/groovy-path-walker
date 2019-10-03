@@ -1,11 +1,16 @@
 package com.apifortress.groovypathwalker
 
+import groovy.transform.CompileStatic
+
 import java.util.regex.Pattern
 
 class PathWalker {
 
     static public def navigate(def item,def paths, def scope = null){
         def element,key
+
+        if (!item)
+            item = scope
 
         if (paths.size() <= 0)
             element =item
@@ -19,7 +24,7 @@ class PathWalker {
         return element
     }
 
-    private static def process(item, key, paths, element, scope) {
+    private static def process(def item, String key, List paths, element, def scope) {
         if (item instanceof Map && key != null
                 || item instanceof String && key != null) {
             try {
@@ -32,7 +37,7 @@ class PathWalker {
         element
     }
 
-    private static def processList(def key, def paths, def item){
+    private static def processList(String key, List paths, def item){
         String regex = "\\w*\\[\\d*\\]"
         def index
 
@@ -47,7 +52,8 @@ class PathWalker {
         }
     }
 
-    private static def processVariable(def key, def paths, def item, def scope){
+
+    private static def processVariable(String key, List paths, def item, def scope){
         String regex = '\\$\\D*\\$'
         def index
 
@@ -62,39 +68,37 @@ class PathWalker {
         }
     }
 
-    private static Object itemFromList(key, item, index) {
+
+    private static def itemFromList(String key,def item,int index) {
         if (key != '')
             item = item.get(key)
         item = item[index]
-        item
+        return item
     }
 
-    private static def sanifyKey(key,c) {
+    @CompileStatic
+    private static def sanifyKey(String key,String c) {
         key = key.substring(0, key.indexOf(c))
         key
     }
 
-    private static def sanifyKey(key,s,e) {
+    @CompileStatic
+    private static def sanifyKey(String key, String s, String e) {
         key = key.substring(key.indexOf(s) + 1)
         key = key.substring(0,key.indexOf(e))
-        key
+        return key
     }
 
-    private static def listIndex(key,s,e) {
+    @CompileStatic
+    private static def listIndex(String key,String s, String e) {
         def index
         index = key.substring(key.indexOf(s) + 1, key.indexOf(e)) as int
-        index
+        return index
     }
 
-    private static List sanifyKeyListIndex(key) {
-        def index
-        index = key.substring(key.indexOf('[') + 1, key.indexOf(']')) as int
-        key = key.substring(0, key.indexOf('['))
-        [key, index]
-    }
-
-    private static def processKey(paths) {
-        def key
+    @CompileStatic
+    private static def processKey(List paths) {
+        String key
         if (paths.size() > 0)
             key = paths.remove(0)
         else
@@ -102,16 +106,18 @@ class PathWalker {
         return [key,paths]
     }
 
+    @CompileStatic
     private static List paths(String path) {
-        List paths = path.split('\\.')
-        paths
+        List paths = path.split('\\.').toList()
+        return paths
     }
 
+    @CompileStatic
     public static String sanifyPath(String path) {
         path = path.replaceAll("\\[\"(.*?)\"\\]", '.$1')
         path = path.replaceAll("\\[\'(.*?)\'\\]", '.$1')
         path = path.replaceAll("\\[(\\D*)\\]", '.\\$$1\\$')
         path = path.replaceAll("\\?", '')
-        path
+        return path
     }
 }
