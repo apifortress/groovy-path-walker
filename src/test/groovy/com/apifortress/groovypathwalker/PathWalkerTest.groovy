@@ -149,7 +149,7 @@ class PathWalkerTest {
         def map = ['payload':['a': ['b': ['c': ['a','b','c']]]],'var':'foo1']
         def valuesList = ['a','b','c']
         def path = 'payload.a.b.c.pick()'
-        navigateRandomValue(null,path,valuesList,map)
+        navigateRandomValues(null,path,valuesList,map)
     }
 
     @Test
@@ -175,20 +175,6 @@ class PathWalkerTest {
         assertEquals(expected,element)
     }
 
-    private void printInformations(item, scope, String path) {
-        println "************************"
-        println "Item: " + (JsonOutput.toJson(item))
-        println "Scope: " + (JsonOutput.toJson(scope))
-        println "Path: " + path
-    }
-
-    public void navigateRandomValue(def item, String path, def valuesList, def scope = null) {
-        printInformations(item, scope, path)
-        def element = PathWalker.walk(item,path,scope)
-        println "Result: " + element
-        assertTrue(element in valuesList)
-    }
-
     public void navigateRandomValues(def item, String path, def valuesList, def scope = null) {
         printInformations(item, scope, path)
         def element = PathWalker.walk(item,path,scope)
@@ -198,6 +184,13 @@ class PathWalkerTest {
         }
         println "Result: " + element
         assertTrue(valuesIn)
+    }
+
+    private void printInformations(item, scope, String path) {
+        println "************************"
+        println "Item: " + (JsonOutput.toJson(item))
+        println "Scope: " + (JsonOutput.toJson(scope))
+        println "Path: " + path
     }
 
     public void initMetaclasses(){
