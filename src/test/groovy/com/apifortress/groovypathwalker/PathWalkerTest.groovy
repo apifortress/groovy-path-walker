@@ -162,6 +162,56 @@ class PathWalkerTest {
     }
 
 
+    @Test
+    public void testPlainUnsupportedBraces() {
+        def map = ['payload':['a': ['b': ['c': ['foo1': 'bar1']]]],'var':'foo1']
+        def path = 'payload.a.{b}.c.size()'
+        println path
+        def supported = PathWalker.isSupported(path)
+        println "Supported: " + supported
+        assertFalse(supported)
+    }
+
+    @Test
+    public void testPlainUnsupportedFunction() {
+        def map = ['payload':['a': ['b': ['c': ['foo1': 'bar1']]]],'var':'foo1']
+        def path = 'payload.a.b.c.unsupported()'
+        println path
+        def supported = PathWalker.isSupported(path)
+        println "Supported: " + supported
+        assertFalse(supported)
+    }
+
+    @Test
+    public void testPlainSupportedFunction() {
+        def map = ['payload':['a': ['b': ['c': ['foo1': 'bar1']]]],'var':'foo1']
+        def path = 'payload.a.b.c.size()'
+        println path
+        def supported = PathWalker.isSupported(path)
+        println "Supported: " + supported
+        assertTrue(supported)
+    }
+
+    @Test
+    public void testPlainUnSupportedStar() {
+        def map = ['payload':['a': ['b': ['c': ['foo1': 'bar1']]]],'var':'foo1']
+        def path = 'payload.a.b.c.*'
+        println path
+        def supported = PathWalker.isSupported(path)
+        println "Supported: " + supported
+        assertFalse(supported)
+    }
+
+    @Test
+    public void testPlainUnSupportedOperator() {
+        def map = ['payload':['a': ['b': ['c': ['foo1': 'bar1']]]],'var':'foo1']
+        def path = 'payload.a.b.c{it -> print it}'
+        println path
+        def supported = PathWalker.isSupported(path)
+        println "Supported: " + supported
+        assertFalse(supported)
+    }
+
     public void navigateWithException(def item, String path) {
         printInformations(item, null, path)
         String element = PathWalker.walk(item, path)

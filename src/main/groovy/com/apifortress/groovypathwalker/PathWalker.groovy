@@ -7,7 +7,7 @@ import java.util.regex.Pattern
 
 class PathWalker {
 
-    private static final String REGEX_REGEX = "\\w*\\(\\d?\\)"
+    private static final String REGEX_FUNC = "\\w*\\(\\d?\\)"
     private static final String REGEX_VAR = '\\$\\D*\\$'
     private static final String REGEX_LIST = "\\w*\\[\\d*\\]"
 
@@ -23,7 +23,6 @@ class PathWalker {
     private static final String SANIFY_PATH_SINGLE_QUOTES = "\\[\'(.*?)\'\\]"
     private static final String SANIFY_PATH_VARIABLE = "\\[(\\D*)\\]"
     private static final String SANIFY_PATH_QUESTIONE_MARK = "\\?"
-
 
 
 
@@ -66,10 +65,9 @@ class PathWalker {
     }
 
     private static def processList(String key, List paths, def item){
-        String regex = PathWalker.REGEX_LIST
         def index
 
-        if (Pattern.matches(regex, key)) {
+        if (Pattern.matches(REGEX_LIST, key)) {
             index = listIndex(key,START_LIST,END_LIST)
             key = sanifyKey(key,START_LIST)
             item = itemFromList(key, item, index as int)
@@ -81,10 +79,9 @@ class PathWalker {
     }
 
     private static def processFunction(String key, List paths, def item){
-        String regex = PathWalker.REGEX_REGEX
         def index = null
 
-        if (key && Pattern.matches(regex, key)) {
+        if (key && Pattern.matches(REGEX_FUNC, key)) {
             index = listIndex(key,START_FUNC,END_FUNC)
             key = sanifyKey(key,START_FUNC)
             item = runFunction(key,index,item)
@@ -119,10 +116,9 @@ class PathWalker {
 
 
     private static def processVariable(String key, List paths, def item, def scope){
-        String regex = com.apifortress.groovypathwalker.PathWalker.REGEX_VAR
         def index
 
-        if (key && Pattern.matches(regex, key)) {
+        if (key && Pattern.matches(REGEX_VAR, key)) {
             key = sanifyKey(key,START_VAR,END_VAR)
             index = scope.get(key)
             item = item.get(index)
@@ -184,5 +180,33 @@ class PathWalker {
         path = path.replaceAll(SANIFY_PATH_VARIABLE, '.\\$$1\\$')
         path = path.replaceAll(SANIFY_PATH_QUESTIONE_MARK, '')
         return path
+    }
+
+    private static final String REGEX_UNSUPPORTED_BRACES = "\\{.*?\\}"
+    private static final String REGEX_UNSUPPORTED_STARTS = "\\*"
+    private static final String REGEX_UNSUPPORTED_OPERATOR = ".*?\\->.*?"
+
+    public static boolean  isSupported(String path){
+        boolean supported = true
+        def sanifiedPath = PathWalker.sanifyPath(path)
+        List paths = PathWalker.processPath(sanifiedPath)
+
+        paths.each {
+            supported = supported && !Pattern.matches(REGEX_UNSUPPORTED_BRACES, it)
+
+            if (Pattern.matches(REGEX_FUNC, it)){
+                def func = sanifyKey(it,START_FUNC)
+                supported = supported && func in ['size','pick','values','keySet']
+            }
+
+            supported = supported && !Pattern.matches(REGEX_UNSUPPORTED_STARTS, it)
+            supported = supported && !Pattern.matches(REGEX_UNSUPPORTED_OPERATOR, it)
+        }
+
+
+
+        return supported
+
+
     }
 }

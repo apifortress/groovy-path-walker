@@ -8,7 +8,13 @@ a.b.c.keySet()
 a.b.c.split(',')
 
 a.b.c.unique()
-lui dovrebbe dirti false perché:
-1. ha delle parentesi tonde
-2. la funzione non è fra quelle supportate
-quadra?
+
+boolean isSupported(String expression)
+
+dovrebbe verificare che:
+non ci siano parentesi graffe
+non ci siano parentesi tonde se non sono presenti i metodi supportati
+non ci siano *
+non ci siano ->
+
+artefatto su mavenrepository
