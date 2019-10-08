@@ -82,7 +82,7 @@ class PathWalker {
 
     private static def processFunction(String key, List paths, def item){
         String regex = PathWalker.REGEX_REGEX
-        def index = -1
+        def index = null
 
         if (key && Pattern.matches(regex, key)) {
             index = listIndex(key,START_FUNC,END_FUNC)
@@ -101,7 +101,10 @@ class PathWalker {
                 item = Functions.size(item)
                 break
             case 'pick':
-                item = Functions.pick(item)
+                if (index)
+                    item = Functions.pick(item,index as int)
+                else
+                    item = Functions.pick(item)
                 break
             case 'values':
                 item = Functions.values(item)

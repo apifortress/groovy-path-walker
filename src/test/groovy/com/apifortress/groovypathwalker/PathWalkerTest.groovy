@@ -152,35 +152,53 @@ class PathWalkerTest {
         navigateRandomValue(null,path,valuesList,map)
     }
 
+    @Test
+    public void testPlainScopePickWithIndex() {
+        initMetaclasses()
+        def map = ['payload':['a': ['b': ['c': ['a','b','c']]]],'var':'foo1']
+        def valuesList = ['a','b','c']
+        def path = 'payload.a.b.c.pick(2)'
+        navigateRandomValues(null,path,valuesList,map)
+    }
+
 
     public void navigateWithException(def item, String path) {
-        path = PathWalker.sanifyPath(path)
+        printInformations(item, null, path)
         String element = PathWalker.walk(item, path)
         assertTrue(element.startsWith("Exception"))
     }
 
     public void navigate(def item, String path, def expected, def scope = null) {
-        println "************************"
-        if (item)  println "Item: " + (JsonOutput.toJson(item))
-        if (scope) println "Scope: " + (JsonOutput.toJson(scope))
-        println "Path: " + path
-        path = PathWalker.sanifyPath(path)
+        printInformations(item, scope, path)
         def element = PathWalker.walk(item,path,scope)
         println "Result: " + element
         assertEquals(expected,element)
     }
 
-    public void navigateRandomValue(def item, String path, def valuesList, def scope = null) {
+    private void printInformations(item, scope, String path) {
         println "************************"
-        if (item)  println "Item: " + (JsonOutput.toJson(item))
-        if (scope) println "Scope: " + (JsonOutput.toJson(scope))
+        println "Item: " + (JsonOutput.toJson(item))
+        println "Scope: " + (JsonOutput.toJson(scope))
         println "Path: " + path
-        path = PathWalker.sanifyPath(path)
+    }
+
+    public void navigateRandomValue(def item, String path, def valuesList, def scope = null) {
+        printInformations(item, scope, path)
         def element = PathWalker.walk(item,path,scope)
         println "Result: " + element
         assertTrue(element in valuesList)
     }
 
+    public void navigateRandomValues(def item, String path, def valuesList, def scope = null) {
+        printInformations(item, scope, path)
+        def element = PathWalker.walk(item,path,scope)
+        def valuesIn = true
+        item.each {
+            valuesIn = valuesIn && it in valuesList
+        }
+        println "Result: " + element
+        assertTrue(valuesIn)
+    }
 
     public void initMetaclasses(){
         ArrayList.metaClass.pick { Integer q ->
