@@ -1,12 +1,12 @@
 package com.apifortress.groovypathwalker.utils.impl
 
-class Functions extends AbstractFunctions{
+class Functions {
     public static String size(def item) {
         return item.size() as String
     }
 
     public static String pick(def item) {
-        return "Pick added in Fortress"
+        return item.pick()
     }
 
     public static String values(def item) {
