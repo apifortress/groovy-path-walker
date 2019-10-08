@@ -167,7 +167,7 @@ class PathWalkerTest {
         def map = ['payload':['a': ['b': ['c': ['foo1': 'bar1']]]],'var':'foo1']
         def path = 'payload.a.{b}.c.size()'
         println path
-        def supported = PathWalker.isSupported(path)
+        def supported = GroovyPathWalker.isSupported(path)
         println "Supported: " + supported
         assertFalse(supported)
     }
@@ -177,7 +177,7 @@ class PathWalkerTest {
         def map = ['payload':['a': ['b': ['c': ['foo1': 'bar1']]]],'var':'foo1']
         def path = 'payload.a.b.c.unsupported()'
         println path
-        def supported = PathWalker.isSupported(path)
+        def supported = GroovyPathWalker.isSupported(path)
         println "Supported: " + supported
         assertFalse(supported)
     }
@@ -187,7 +187,7 @@ class PathWalkerTest {
         def map = ['payload':['a': ['b': ['c': ['foo1': 'bar1']]]],'var':'foo1']
         def path = 'payload.a.b.c.size()'
         println path
-        def supported = PathWalker.isSupported(path)
+        def supported = GroovyPathWalker.isSupported(path)
         println "Supported: " + supported
         assertTrue(supported)
     }
@@ -197,7 +197,7 @@ class PathWalkerTest {
         def map = ['payload':['a': ['b': ['c': ['foo1': 'bar1']]]],'var':'foo1']
         def path = 'payload.a.b.c.*'
         println path
-        def supported = PathWalker.isSupported(path)
+        def supported = GroovyPathWalker.isSupported(path)
         println "Supported: " + supported
         assertFalse(supported)
     }
@@ -207,27 +207,27 @@ class PathWalkerTest {
         def map = ['payload':['a': ['b': ['c': ['foo1': 'bar1']]]],'var':'foo1']
         def path = 'payload.a.b.c{it -> print it}'
         println path
-        def supported = PathWalker.isSupported(path)
+        def supported = GroovyPathWalker.isSupported(path)
         println "Supported: " + supported
         assertFalse(supported)
     }
 
     public void navigateWithException(def item, String path) {
         printInformations(item, null, path)
-        String element = PathWalker.walk(item, path)
+        String element = GroovyPathWalker.walk(item, path)
         assertTrue(element.startsWith("Exception"))
     }
 
     public void navigate(def item, String path, def expected, def scope = null) {
         printInformations(item, scope, path)
-        def element = PathWalker.walk(item,path,scope)
+        def element = GroovyPathWalker.walk(item,path,scope)
         println "Result: " + element
         assertEquals(expected,element)
     }
 
     public void navigateRandomValues(def item, String path, def valuesList, def scope = null) {
         printInformations(item, scope, path)
-        def element = PathWalker.walk(item,path,scope)
+        def element = GroovyPathWalker.walk(item,path,scope)
         def valuesIn = true
         item.each {
             valuesIn = valuesIn && it in valuesList
