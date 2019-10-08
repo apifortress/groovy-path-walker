@@ -120,6 +120,35 @@ class PathWalkerTest {
         checkNavigation(null,path,'bar1',map)
     }
 
+    @Test
+    public void testPlainScopeSize() {
+        def map = ['payload':['a': ['b': ['c': ['foo1': 'bar1']]]],'var':'foo1']
+        def path = 'payload.a.b.c.size()'
+        checkNavigation(null,path,'1',map)
+    }
+
+    @Test
+    public void testPlainScopeValues() {
+        def map = ['payload':['a': ['b': ['c': ['foo1': 'bar1']]]],'var':'foo1']
+        def path = 'payload.a.b.c.values()'
+        checkNavigation(null,path,'[bar1]',map)
+    }
+
+    @Test
+    public void testPlainScopeKeySet() {
+        def map = ['payload':['a': ['b': ['c': ['foo1': 'bar1']]]],'var':'foo1']
+        def path = 'payload.a.b.c.keySet()'
+        checkNavigation(null,path,'[foo1]',map)
+    }
+
+    @Test
+    public void testPlainScopePick() {
+        def map = ['payload':['a': ['b': ['c': ['a','b','c']]]],'var':'foo1']
+        def path = 'payload.a.b.c.pick()'
+        checkNavigation(null,path,'Pick added in Fortress',map)
+    }
+
+
     public void checkNavigationException(def item, String path) {
         path = PathWalker.sanifyPath(path)
         List paths = PathWalker.processPath(path)

@@ -1,49 +1,14 @@
+strutture per mettere compile static sui ritorni multipli ?
 
+a.b.c.size()
+a.g.c.pick()
+a.b.c.pick(5)
+a.b.c.values()
+a.b.c.keySet()
+a.b.c.split(',')
 
-{
-"foo":{
-"name":"bar"
-}
-}
-Expression: foo.dude?.bananas e foo.dude.bananas
-Result: null
-
-
-foo["name"]
-ma ci sono svariate cose qui da dire
-zio billy come temevo 🙂
-ne avevamo anche parlato, ma in realtà se la funzione è scritta bene, non dovrebbe cambiare un gran che
-se la funzione è implementata come un _memento_ , la cosa dovrebbe essere semplice.
-mi spiego.
-one.two.three
-un memento saprebbe il suo segmento corrente il blocco che gli manca
-per capirci:
-```
-navigate(current,remaining,scope)
-```
-e lasciare che la iterazione precedente decida qual è l'oggetto corrente
-simuliamo per esempio che noi si debba navigare, con questo prototipo:
-```
-{
-"foo":{
-"foo-bar":{
-}
-}
-```
-
-
-esatto, e inoltre
-le espressioni sono scritte dall'utente
-e se l'utente vuole scrivere
-foo["foo-bar"]["name"]
-foo["foo-bar"].namne
-vanno gestite anche le dure robe sopra
-
-
-mappe:
-c['a']
-c["a"]
-c[var]
-foo[variabile]
-
-
+a.b.c.unique()
+lui dovrebbe dirti false perché:
+1. ha delle parentesi tonde
+2. la funzione non è fra quelle supportate
+quadra?
