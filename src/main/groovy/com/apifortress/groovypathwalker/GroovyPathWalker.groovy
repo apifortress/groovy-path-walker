@@ -22,9 +22,9 @@ class GroovyPathWalker {
     public static def walk(def item,def path, def scope = null){
         //normalize input path. we need path in the form a.b.c.d
         //every accessor will be normalized in a.b.c.d form
-        def sanifiedPath = GroovyPathWalker.normalizePath(path)
+        def normalizedPath = GroovyPathWalker.normalizePath(path)
         //splits the normalized path in a liste with every single part of the pat
-        List paths = GroovyPathWalker.processPath(sanifiedPath)
+        List paths = GroovyPathWalker.processPath(normalizedPath)
         //walks the path list
         return processWalk(item, paths, scope)
     }
@@ -201,12 +201,24 @@ class GroovyPathWalker {
         return item
     }
 
-
+    /**
+     * Getting key part of a pathElement
+     * @param pathElement
+     * @param c
+     * @return
+     */
     @CompileStatic
     private static def normalizePathElement(String pathElement, String c) {
         return pathElement.substring(0, pathElement.indexOf(c))
     }
 
+    /**
+     * Getting key part of a pathElement
+     * @param pathElement
+     * @param s
+     * @param e
+     * @return
+     */
     @CompileStatic
     private static def normalizePathElement(String pathElement, String s, String e) {
         pathElement = pathElement.substring(pathElement.indexOf(s) + 1)
@@ -214,42 +226,72 @@ class GroovyPathWalker {
         return pathElement
     }
 
+    /**
+     * getting the index. can be used to get the index of a list of a argument of a function
+     * @param pathElement
+     * @param s
+     * @param e
+     * @return
+     */
     @CompileStatic
     private static def processIndex(String pathElement, String s, String e) {
-        def index
-        index = pathElement.substring(pathElement.indexOf(s) + 1, pathElement.indexOf(e))
-        return index
+        return pathElement.substring(pathElement.indexOf(s) + 1, pathElement.indexOf(e))
     }
 
+    /**
+     * getting next path element while advancing in the list of paths
+     * @param paths
+     * @return
+     */
     @CompileStatic
     private static def processPathElement(List paths) {
-        String key
+        String pathElement
+        //if i have still paths then i remove the first one and return him as the current path element to be analized
         if (paths.size() > 0)
-            key = paths.remove(0)
+            pathElement = paths.remove(0)
         else
-            key == null
-        return [key,paths]
+            pathElement == null
+        return [pathElement,paths]
     }
 
+    /**
+     * Return the list of paths
+     * @param path
+     * @return
+     */
     @CompileStatic
     public static List processPath(String path) {
         List paths = path.split('\\.').toList()
         return paths
     }
 
+    /**
+     * Returns a normalized path.
+     * @param path
+     * @return
+     */
     @CompileStatic
     public static String normalizePath(String path) {
-        path = path.replaceAll(SANIFY_PATH_DOUBLE_QUOTES, '.$1')
-        path = path.replaceAll(SANIFY_PATH_SINGLE_QUOTES, '.$1')
-        path = path.replaceAll(SANIFY_PATH_VARIABLE, '.\\$$1\\$')
-        path = path.replaceAll(SANIFY_PATH_QUESTIONE_MARK, '')
+        //replacing double quotes with .pathBeetweenDoubleQuotes
+        path = path.replaceAll(NORMALIZED_PATH_DOUBLE_QUOTES, '.$1')
+        //replacing single quotes with .pathBeetweenSingleQuotes
+        path = path.replaceAll(NORMALIZED_PATH_SINGLE_QUOTES, '.$1')
+        //replacing variable with .pathBeetweenSquareBrackets
+        path = path.replaceAll(NORMALIZED_PATH_VARIABLE, '.\\$$1\\$')
+        //removing quesion mark
+        path = path.replaceAll(NORMALIZED_PATH_QUESTIONE_MARK, '')
         return path
     }
 
+    /**
+     * Returns if a path is supported or not
+     * @param path
+     * @return
+     */
     public static boolean  isSupported(String path){
         boolean supported = true
-        def sanifiedPath = GroovyPathWalker.normalizePath(path)
-        List paths = GroovyPathWalker.processPath(sanifiedPath)
+        def normalizedPath = GroovyPathWalker.normalizePath(path)
+        List paths = GroovyPathWalker.processPath(normalizedPath)
 
         paths.each {
             supported = supported && !Pattern.matches(REGEX_UNSUPPORTED_BRACES, it)
@@ -278,10 +320,10 @@ class GroovyPathWalker {
     private static final String END_VAR = '$'
     private static final String END_LIST = ']'
 
-    private static final String SANIFY_PATH_DOUBLE_QUOTES = "\\[\"(.*?)\"\\]"
-    private static final String SANIFY_PATH_SINGLE_QUOTES = "\\[\'(.*?)\'\\]"
-    private static final String SANIFY_PATH_VARIABLE = "\\[(\\D*)\\]"
-    private static final String SANIFY_PATH_QUESTIONE_MARK = "\\?"
+    private static final String NORMALIZED_PATH_DOUBLE_QUOTES = "\\[\"(.*?)\"\\]"
+    private static final String NORMALIZED_PATH_SINGLE_QUOTES = "\\[\'(.*?)\'\\]"
+    private static final String NORMALIZED_PATH_VARIABLE = "\\[(\\D*)\\]"
+    private static final String NORMALIZED_PATH_QUESTIONE_MARK = "\\?"
 
     private static final String REGEX_UNSUPPORTED_BRACES = "\\{.*?\\}"
     private static final String REGEX_UNSUPPORTED_STARTS = "\\*"
