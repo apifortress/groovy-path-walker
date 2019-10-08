@@ -155,9 +155,9 @@ class PathWalkerTest {
     @Test
     public void testPlainScopePickWithIndex() {
         initMetaclasses()
-        def map = ['payload':['a': ['b': ['c': ['a','b','c']]]],'var':'foo1']
-        def valuesList = ['a','b','c']
-        def path = 'payload.a.b.c.pick(2)'
+        def map = ['payload':['a': ['b': ['c': ['a','b','c','d','e','f','g','h']]]],'var':'foo1']
+        def valuesList = ['a','b','c','d','e','f','g','h']
+        def path = 'payload.a.b.c.pick(3)'
         navigateRandomValues(null,path,valuesList,map)
     }
 
