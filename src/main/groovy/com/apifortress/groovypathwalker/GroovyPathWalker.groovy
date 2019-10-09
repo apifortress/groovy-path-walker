@@ -121,6 +121,7 @@ class GroovyPathWalker {
         //return [pathElement,paths]
     }
 
+    @CompileStatic
     private static List processFunction(String pathElement, item, List paths) {
         // get function argument element if exist
         def argument = processIndex(pathElement, START_FUNC, END_FUNC)
@@ -133,6 +134,7 @@ class GroovyPathWalker {
         return Arrays.asList(pathElement, item, paths)
     }
 
+    @CompileStatic
     private static List processVariable(String pathElement, Map scope, item, List paths) {
         // get key part of path element
         pathElement = normalizePathElement(pathElement, START_VAR, END_VAR)
@@ -146,6 +148,7 @@ class GroovyPathWalker {
         return Arrays.asList(pathElement, item, paths)
     }
 
+    @CompileStatic
     private static List processList(String pathElement, item, List paths) {
         // get index of list
         def index = processIndex(pathElement, START_LIST, END_LIST)
