@@ -3,8 +3,6 @@ package com.apifortress.groovypathwalker
 import groovy.transform.CompileStatic
 import com.apifortress.groovypathwalker.utils.impl.Functions
 
-import java.util.regex.Pattern
-
 /**
  * © 2019 API Fortress
  * @author Diego Brach
@@ -37,7 +35,7 @@ class GroovyPathWalker {
      * @return
      */
     private static def processWalk(def item, def paths, def scope = null){
-        def element,pathElement
+        def result,pathElement
 
         //if starting with null item, then the starting point is the scope itself
         if (!item)
@@ -45,21 +43,14 @@ class GroovyPathWalker {
 
         //if i have no more path items,then item is the result of the walk
         if (paths.size() <= 0)
-            element =item
+            result = item
         else {
             //get path Element, removing it from path element list
-            (pathElement, paths) = processPathElement(paths)
-            //if pathElement is a list, process the list getting proper element from list and index
-            (pathElement, paths, item) = processList(pathElement, paths, item)
-            //if pathElement is a variable of scope, process the element to get the value of the variable
-            (pathElement, paths, item) = processVariable(pathElement, paths, item,scope)
-            //if pathElement is a supported function processs the function
-            (pathElement, paths, item) = processFunction(pathElement, paths, item)
-            //walk trought the path
-            element = process(pathElement, paths, item, scope)
+            (pathElement, paths, item) = processInit(paths,item,scope)
+            result = processPathElement(pathElement, paths, item, scope)
         }
 
-        return element
+        return result
     }
 
     /**
@@ -70,92 +61,116 @@ class GroovyPathWalker {
      * @param scope
      * @return
      */
-    private static def process(String pathElement, List paths,def item, def scope) {
-        def element = item
+    private static def processPathElement(String pathElement, List paths,def item, def scope) {
+        def result = item
 
-        if (item instanceof Map && pathElement != null
-            || item instanceof String && pathElement != null)
+        if (result instanceof Map && pathElement != null
+            || result instanceof String && pathElement != null)
         {
             try {
-                element = processWalk(item.get(pathElement), paths, scope)
+                result = processWalk(item.get(pathElement), paths, scope)
             } catch (Exception ex) {
-                element = "Exception: " + ex.toString()
+                result = "Exception: " + ex.toString()
             }
         }
 
-        return element
+        return result
     }
 
     /**
-     * Process list path element
-     * @param pathElement
+     * getting next path element while advancing in the list of paths
      * @param paths
-     * @param item
      * @return
      */
-    private static def processList(String pathElement, List paths, def item){
-        //if path element matches a list regex
-        if (Pattern.matches(REGEX_LIST, pathElement)) {
-            // get index of list
-            def index = processIndex(pathElement,START_LIST,END_LIST)
-            // get key part of path element
-            pathElement = normalizePathElement(pathElement,START_LIST)
-            // get item from the path element
-            item = itemFromList(pathElement, item, index as int)
-            // get new path element and advance in the walk
-            (pathElement,paths) = processPathElement(paths)
-            return [pathElement,paths,item]
-        } else {
-            return [pathElement,paths,item]
-        }
+    @CompileStatic
+    private static List<Object> processInit(List paths, def item, Map scope) {
+        String pathElement
+        //if i have still paths then i remove the first one and return him as the current path element to be analized
+        if (paths.size() > 0) {
+            pathElement = paths.remove(0)
+
+            //if pathElement is a list, process the list getting proper element from list and index
+            if (pathElement.matches(REGEX_LIST)) {
+                List<Object> result = processList(pathElement, item, paths)
+                pathElement = result[0]
+                item = result[1]
+                paths = (List) result[2]
+            }
+
+            //if pathElement is a variable of scope, process the element to get the value of the variable
+            if (pathElement != null && pathElement.matches(REGEX_VAR)){
+                List<Object> result = processVariable(pathElement, scope, item, paths)
+                pathElement = result[0]
+                item = result[1]
+                paths = (List) result[2]
+            }
+
+            //if pathElement is a supported function processs the function
+
+            if (pathElement != null && pathElement.matches(REGEX_FUNC)){
+                List<Object> result = processFunction(pathElement, item, paths)
+                pathElement = result[0]
+                item = result[1]
+                paths = (List) result[2]
+            }
+
+        } else
+            pathElement == null
+
+        return Arrays.asList(pathElement,paths,item)
+        //return [pathElement,paths]
     }
 
-    /**
-     * Process variable path element
-     * @param pathElement
-     * @param paths
-     * @param item
-     * @param scope
-     * @return
-     */
-    private static def processVariable(String pathElement, List paths, def item, def scope){
-        //if pathElement is not null and matches variable regex
-        if (pathElement && Pattern.matches(REGEX_VAR, pathElement)) {
-            // get key part of path element
-            pathElement = normalizePathElement(pathElement,START_VAR,END_VAR)
-            // retrieve the value from scope
-            def scopeValue = scope.get(pathElement)
+    private static List processFunction(String pathElement, item, List paths) {
+        // get function argument element if exist
+        def argument = processIndex(pathElement, START_FUNC, END_FUNC)
+        // get key part of path element
+        pathElement = normalizePathElement(pathElement, START_FUNC)
+        //run the function
+        item = runFunction(pathElement, argument, item)
+        // get new path element and advance in the walk
+        if (paths.size() > 0) pathElement = paths.remove(0) else pathElement = null
+        return Arrays.asList(pathElement, item, paths)
+    }
+
+    private static List processVariable(String pathElement, Map scope, item, List paths) {
+        // get key part of path element
+        pathElement = normalizePathElement(pathElement, START_VAR, END_VAR)
+        // retrieve the value from scope
+        def scopeValue = scope.get(pathElement)
+        //def element = null
+        if (item instanceof Map)
             item = item.get(scopeValue)
-            // get new path element and advance in the walk
-            (pathElement,paths) = processPathElement(paths)
-            return [pathElement,paths,item]
-        } else {
-            return [pathElement,paths,item]
-        }
+        // get new path element and advance in the walk
+        if (paths.size() > 0) pathElement = paths.remove(0) else pathElement = null
+        return Arrays.asList(pathElement, item, paths)
     }
 
+    private static List processList(String pathElement, item, List paths) {
+        // get index of list
+        def index = processIndex(pathElement, START_LIST, END_LIST)
+        // get key part of path element
+        pathElement = normalizePathElement(pathElement, START_LIST)
+        // get item from the path element
+        item = itemFromList(pathElement, item, index as int)
+        // get new path element and advance in the walk
+        if (paths.size() > 0) pathElement = paths.remove(0) else pathElement = null
+        return Arrays.asList(pathElement, item, paths)
+    }
     /**
-     * process function path element
+     * Gets a item from a list given an index
      * @param pathElement
-     * @param paths
      * @param item
+     * @param index
      * @return
      */
-    private static def processFunction(String pathElement, List paths, def item){
-        //if pathElement is not null and matches function regex
-        if (pathElement && Pattern.matches(REGEX_FUNC, pathElement)) {
-            // get function argument element if exist
-            def argument = processIndex(pathElement,START_FUNC,END_FUNC)
-            // get key part of path element
-            pathElement = normalizePathElement(pathElement,START_FUNC)
-            //run the function
-            item = runFunction(pathElement,argument,item)
-            // get new path element and advance in the walk
-            (pathElement,paths) = processPathElement(paths)
-            return [pathElement,paths,item]
-        } else {
-            return [pathElement,paths,item]
-        }
+    @CompileStatic
+    private static def itemFromList(String pathElement,def item,int index) {
+        if (pathElement != '' && item instanceof Map)
+            item = item.get(pathElement)
+        if (item instanceof List)
+            item = ((List) item)[index]
+        return item
     }
 
     /**
@@ -165,6 +180,7 @@ class GroovyPathWalker {
      * @param item
      * @return
      */
+    @CompileStatic
     private static def runFunction(String function,def index, def item){
         switch (function){
             case 'size':
@@ -185,20 +201,6 @@ class GroovyPathWalker {
             defaul: break;
         }
         return item.toString()
-    }
-
-    /**
-     * Gets a item from a list given an index
-     * @param pathElement
-     * @param item
-     * @param index
-     * @return
-     */
-    private static def itemFromList(String pathElement,def item,int index) {
-        if (pathElement != '')
-            item = item.get(pathElement)
-        item = item[index]
-        return item
     }
 
     /**
@@ -239,22 +241,6 @@ class GroovyPathWalker {
     }
 
     /**
-     * getting next path element while advancing in the list of paths
-     * @param paths
-     * @return
-     */
-    @CompileStatic
-    private static def processPathElement(List paths) {
-        String pathElement
-        //if i have still paths then i remove the first one and return him as the current path element to be analized
-        if (paths.size() > 0)
-            pathElement = paths.remove(0)
-        else
-            pathElement == null
-        return [pathElement,paths]
-    }
-
-    /**
      * Return the list of paths
      * @param path
      * @return
@@ -288,45 +274,48 @@ class GroovyPathWalker {
      * @param path
      * @return
      */
+    @CompileStatic
     public static boolean  isSupported(String path){
         boolean supported = true
         def normalizedPath = GroovyPathWalker.normalizePath(path)
         List paths = GroovyPathWalker.processPath(normalizedPath)
 
         paths.each {
-            supported = supported && !Pattern.matches(REGEX_UNSUPPORTED_BRACES, it)
+            String pathElement = it
+            supported = supported && !pathElement.matches(REGEX_UNSUPPORTED_BRACES)
 
-            if (Pattern.matches(REGEX_FUNC, it)){
-                def func = normalizePathElement(it,START_FUNC)
+            if (pathElement.matches(REGEX_FUNC)){
+                def func = normalizePathElement(pathElement,START_FUNC)
                 supported = supported && func in ['size','pick','values','keySet']
             }
 
-            supported = supported && !Pattern.matches(REGEX_UNSUPPORTED_STARTS, it)
-            supported = supported && !Pattern.matches(REGEX_UNSUPPORTED_OPERATOR, it)
+            supported = supported && !pathElement.matches(REGEX_UNSUPPORTED_STARTS)
+            supported = supported && !pathElement.matches(REGEX_UNSUPPORTED_OPERATOR)
+
         }
 
         return supported
     }
 
-    private static final String REGEX_FUNC = "\\w*\\(\\d?\\)"
-    private static final String REGEX_VAR = '\\$\\D*\\$'
-    private static final String REGEX_LIST = "\\w*\\[\\d*\\]"
+    public static final String REGEX_FUNC = "\\w*\\(\\d?\\)"
+    public static final String REGEX_VAR = '\\$\\D*\\$'
+    public static final String REGEX_LIST = "\\w*\\[\\d*\\]"
 
-    private static final String START_FUNC = '('
-    private static final String START_VAR = '$'
-    private static final String START_LIST = '['
+    public static final String START_FUNC = '('
+    public static final String START_VAR = '$'
+    public static final String START_LIST = '['
 
-    private static final String END_FUNC = ')'
-    private static final String END_VAR = '$'
-    private static final String END_LIST = ']'
+    public static final String END_FUNC = ')'
+    public static final String END_VAR = '$'
+    public static final String END_LIST = ']'
 
-    private static final String NORMALIZED_PATH_DOUBLE_QUOTES = "\\[\"(.*?)\"\\]"
-    private static final String NORMALIZED_PATH_SINGLE_QUOTES = "\\[\'(.*?)\'\\]"
-    private static final String NORMALIZED_PATH_VARIABLE = "\\[(\\D*)\\]"
-    private static final String NORMALIZED_PATH_QUESTIONE_MARK = "\\?"
+    public static final String NORMALIZED_PATH_DOUBLE_QUOTES = "\\[\"(.*?)\"\\]"
+    public static final String NORMALIZED_PATH_SINGLE_QUOTES = "\\[\'(.*?)\'\\]"
+    public static final String NORMALIZED_PATH_VARIABLE = "\\[(\\D*)\\]"
+    public static final String NORMALIZED_PATH_QUESTIONE_MARK = "\\?"
 
-    private static final String REGEX_UNSUPPORTED_BRACES = "\\{.*?\\}"
-    private static final String REGEX_UNSUPPORTED_STARTS = "\\*"
-    private static final String REGEX_UNSUPPORTED_OPERATOR = ".*?\\->.*?"
+    public static final String REGEX_UNSUPPORTED_BRACES = "\\{.*?\\}"
+    public static final String REGEX_UNSUPPORTED_STARTS = "\\*"
+    public static final String REGEX_UNSUPPORTED_OPERATOR = ".*?\\->.*?"
 
 }
