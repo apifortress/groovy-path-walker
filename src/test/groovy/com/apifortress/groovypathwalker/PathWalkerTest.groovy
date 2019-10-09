@@ -212,6 +212,26 @@ class PathWalkerTest {
         assertFalse(supported)
     }
 
+    @Test
+    public void testPlainUnSupportedExclamation() {
+        def map = ['payload':['a': ['b': ['c': ['foo1': 'bar1']]]],'var':'foo1']
+        def path = 'payload.a.b!.c'
+        println path
+        def supported = GroovyPathWalker.isSupported(path)
+        println "Supported: " + supported
+        assertFalse(supported)
+    }
+
+    @Test
+    public void testPlainUnSupportedAssignementOperator() {
+        def map = ['payload':['a': ['b': ['c': ['foo1': 'bar1']]]],'var':'foo1']
+        def path = 'payload.a.b=c'
+        println path
+        def supported = GroovyPathWalker.isSupported(path)
+        println "Supported: " + supported
+        assertFalse(supported)
+    }
+
     public void navigateWithException(def item, String path) {
         printInformations(item, null, path)
         String element = GroovyPathWalker.walk(item, path)

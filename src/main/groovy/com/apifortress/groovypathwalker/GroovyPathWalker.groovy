@@ -286,14 +286,17 @@ class GroovyPathWalker {
         paths.each {
             String pathElement = it
             supported = supported && !pathElement.matches(REGEX_UNSUPPORTED_BRACES)
+            supported = supported && !pathElement.matches(REGEX_UNSUPPORTED_STARTS)
+            supported = supported && !pathElement.matches(REGEX_UNSUPPORTED_OPERATOR)
+            supported = supported && !pathElement.matches(REGEX_UNSUPPORTED_EXCLAMATION_MARK)
+            supported = supported && !pathElement.matches(REGEX_UNSUPPORTED_ASSIGNEMENT_OPERATOR)
 
             if (pathElement.matches(REGEX_FUNC)){
                 def func = normalizePathElement(pathElement,START_FUNC)
                 supported = supported && func in ['size','pick','values','keySet']
             }
 
-            supported = supported && !pathElement.matches(REGEX_UNSUPPORTED_STARTS)
-            supported = supported && !pathElement.matches(REGEX_UNSUPPORTED_OPERATOR)
+
 
         }
 
@@ -320,5 +323,7 @@ class GroovyPathWalker {
     public static final String REGEX_UNSUPPORTED_BRACES = "\\{.*?\\}"
     public static final String REGEX_UNSUPPORTED_STARTS = "\\*"
     public static final String REGEX_UNSUPPORTED_OPERATOR = ".*?\\->.*?"
+    public static final String REGEX_UNSUPPORTED_EXCLAMATION_MARK = ".*?\\!.*?"
+    public static final String REGEX_UNSUPPORTED_ASSIGNEMENT_OPERATOR = ".*?\\=.*?"
 
 }
