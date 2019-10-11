@@ -76,7 +76,11 @@ class GroovyPathWalker {
                 //result = "Exception: " + ex.toString()
                 result = byReflection(item, pathElement, result)
             }
-        } else if (!item instanceof List && !item instanceof Map && !item instanceof String && item instanceof Object){
+        } else
+        if (!(item instanceof List) &&
+                   !(item instanceof Map) &&
+                   !(item instanceof String) &&
+                    (item instanceof Object)){
             result = byReflection(item, pathElement, result)
         }
 
