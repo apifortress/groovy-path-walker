@@ -5,6 +5,7 @@ public class Regex {
     public static final String REGEX_FUNC = "\\w*\\(\\d?\\)";
     public static final String REGEX_VAR = "\\$\\D*\\$";
     public static final String REGEX_LIST = "\\w*\\[\\d*\\]";
+    public static final String REGEX_SQUARE_BRACKETS_SINGLE_QUOTE = "\\w*\\[\'\\w*\'\\]";
 
     public static final String START_FUNC = "(";
     public static final String START_VAR = "$";
@@ -15,8 +16,8 @@ public class Regex {
     public static final String END_LIST = "]";
 
     public static final String NORMALIZED_PATH_DOUBLE_QUOTES = "\\[\"(.*?)\"\\]";
-    public static final String NORMALIZED_PATH_SINGLE_QUOTES = "\\[\'(.*?)\'\\]";
-    public static final String NORMALIZED_PATH_VARIABLE = "\\[(\\D*)\\]";
+    //public static final String NORMALIZED_PATH_SINGLE_QUOTES = "\\[\'(.*?)\'\\]";
+    public static final String NORMALIZED_PATH_VARIABLE = "\\[([a-z]*?)\\]";
     public static final String NORMALIZED_PATH_QUESTIONE_MARK = "\\?";
 
     public static final String REGEX_UNSUPPORTED_BRACES = "\\{.*?\\}";

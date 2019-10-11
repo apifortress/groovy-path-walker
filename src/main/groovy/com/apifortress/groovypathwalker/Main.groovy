@@ -6,30 +6,20 @@ import java.util.regex.*
 
 class Main {
     public static void main(String[] args) {
-        String stringa = ""
-        Field[] campi = stringa.getClass().getFields()
-        campi.each { f->
-            println f.getName().toString()
-        }
+        String path = 'foo["cose"][foo]["foo1"]'
 
-        String namToUpperCase = "Bytes"
-        String ritorno = new String();
-        Method metodo = null;
-        try {
-            metodo = stringa.getClass().getMethod("get" + namToUpperCase, null);
-        }
-        catch (NoSuchMethodException exc) { }
-        if (metodo != null)
-            try {
-                ritorno = (String) metodo.invoke(stringa, new Object[0]);
-            }
-            catch (Exception ecc) { }
-        println ritorno;
+        if (path.matches(Regex.NORMALIZED_PATH_VARIABLE))
+            println "math"
 
-        println stringa.getBytes()
-        println stringa.CASE_INSENSITIVE_ORDER
+        path = path.replaceAll(Regex.NORMALIZED_PATH_DOUBLE_QUOTES, '.$1')
+        println path
+        path = path.replaceAll(Regex.NORMALIZED_PATH_VARIABLE, '.\\$$1\\$')
+        println path
 
 
+        List list = ['a','b','c','d','e']
+        println list.indexOf('a')
+        println list.indexOf('z')
     }
 }
 

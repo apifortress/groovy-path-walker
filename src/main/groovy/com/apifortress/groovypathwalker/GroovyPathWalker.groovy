@@ -50,7 +50,8 @@ class GroovyPathWalker {
         else {
             //get path Element, removing it from path element list
             (pathElement, paths, item) = processInit(paths,item,scope)
-            result = processPathElement(pathElement, paths, item, scope)
+            if (result == null)
+                result = processPathElement(pathElement, paths, item, scope)
         }
 
         return result
@@ -72,9 +73,12 @@ class GroovyPathWalker {
         {
             try {
                 result = processWalk(item.get(pathElement), paths, scope)
+            /*} catch (MissingMethodException mme) {
+                result = mme.getMessage()*/
             } catch (Exception ex) {
-                //result = "Exception: " + ex.toString()
-                result = byReflection(item, pathElement, result)
+                result = "Exception: " + ex.toString()
+                def reflectionResult = byReflection(item, pathElement, result)
+                if (reflectionResult) result = reflectionResult
             }
         } else
         if (!(item instanceof List) &&
@@ -93,10 +97,20 @@ class GroovyPathWalker {
         for (int i = 0; i < fieldsNames.length; i++) {
             fieldsNames[i] = fields[i].getName();
         }
+        Method[] methods = item.getClass().getDeclaredMethods()
+        String[] methodsNames = new String[methods.length];
+        for (int i = 0; i < methodsNames.length; i++) {
+            methodsNames[i] = methods[i].getName();
+        }
+
+        result = null
+
         if (pathElement in fieldsNames) {
             Field field = item.getClass().getField(pathElement)
             result = field.get(item)
-        } else {
+        }
+
+        if ("get" + pathElement.capitalize() in methodsNames){
             try {
                 Method method = null;
                 method = item.getClass().getMethod("get" + pathElement.capitalize(), null);
@@ -127,6 +141,15 @@ class GroovyPathWalker {
                 pathElement = result[0]
                 item = result[1]
                 paths = (List) result[2]
+            }
+
+            if (pathElement != null && pathElement.matches(Regex.REGEX_SQUARE_BRACKETS_SINGLE_QUOTE)) {
+                if (item instanceof Map) {
+                    List<Object> result = processSaureBracketsSingleQuote(pathElement, item, paths)
+                    pathElement = result[0]
+                    item = result[1]
+                    paths = (List) result[2]
+                }
             }
 
             //if pathElement is a variable of scope, process the element to get the value of the variable
@@ -190,6 +213,19 @@ class GroovyPathWalker {
         item = itemFromList(pathElement, item, index as int)
         // get new path element and advance in the walk
         if (paths.size() > 0) pathElement = paths.remove(0) else pathElement = null
+        return Arrays.asList(pathElement, item, paths)
+    }
+
+
+    private static List processSaureBracketsSingleQuote(String pathElement, def item, List paths) {
+        // get index of list
+        String index = processIndex(pathElement, "[", "]")
+        index = index.substring(1)
+        index = index.substring(0,index.length()-1)
+        pathElement = normalizePathElement(pathElement, "['")
+        item = item.get(pathElement).get(index)
+        if (paths.size() > 0) pathElement = paths.remove(0) else pathElement = null
+
         return Arrays.asList(pathElement, item, paths)
     }
     /**
@@ -296,11 +332,12 @@ class GroovyPathWalker {
         //replacing double quotes with .pathBeetweenDoubleQuotes
         path = path.replaceAll(Regex.NORMALIZED_PATH_DOUBLE_QUOTES, '.$1')
         //replacing single quotes with .pathBeetweenSingleQuotes
-        path = path.replaceAll(Regex.NORMALIZED_PATH_SINGLE_QUOTES, '.$1')
+        //path = path.replaceAll(Regex.NORMALIZED_PATH_SINGLE_QUOTES, '.$1')
         //replacing variable with .pathBeetweenSquareBrackets
         path = path.replaceAll(Regex.NORMALIZED_PATH_VARIABLE, '.\\$$1\\$')
         //removing quesion mark
         path = path.replaceAll(Regex.NORMALIZED_PATH_QUESTIONE_MARK, '')
+        //println path
         return path
     }
 

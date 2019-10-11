@@ -64,6 +64,12 @@ class PathWalkerTest {
         navigate(map,path,'bar1')
     }
     @Test
+    public void testListAtTheEndApez() {
+        def map = ['foo': ['cose': ['foo': ['a', 'b', 'c']]]]
+        def path = 'foo.cose.foo[\'a\']'
+        navigateWithException(map,path)
+    }
+    @Test
     public void testArrayInMiddleAccesDoppioAppice() {
         def map = ['foo': ['cose': [['foo':'bar'],['foo1':'bar1']]]]
         def path = 'foo.cose[1]["foo1"]'
@@ -249,7 +255,8 @@ class PathWalkerTest {
     public void navigateWithException(def item, String path) {
         printInformations(item, null, path)
         String element = GroovyPathWalker.walk(item, path)
-        assertTrue(element.startsWith("Exception"))
+        println "Result: " + element
+        assertTrue(element.startsWith("Exception") || element.startsWith("No signature"))
     }
 
     public void navigate(def item, String path, def expected, def scope = null,def test = true) {

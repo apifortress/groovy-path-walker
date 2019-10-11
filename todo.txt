@@ -10,3 +10,7 @@ l'idea è questa.
 r1) sì. finito
 r2) no. cerco un metodo che si chiami getCampo, in cui Campo è il nome del frammento nel percorso,
 con la prima lettera in maiuscolo. IL metodo esiste? Sì lo chiamo, altrimenti sega
+
+
+accessor per nome nelle liste. implementare get
+verificare presenza each.
