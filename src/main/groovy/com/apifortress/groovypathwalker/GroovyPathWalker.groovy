@@ -118,7 +118,7 @@ class GroovyPathWalker {
             pathElement = paths.remove(0)
 
             //if pathElement is a list, process the list getting proper element from list and index
-            if (pathElement.matches(REGEX_LIST)) {
+            if (pathElement.matches(Regex.REGEX_LIST)) {
                 List<Object> result = processList(pathElement, item, paths)
                 pathElement = result[0]
                 item = result[1]
@@ -126,7 +126,7 @@ class GroovyPathWalker {
             }
 
             //if pathElement is a variable of scope, process the element to get the value of the variable
-            if (pathElement != null && pathElement.matches(REGEX_VAR)){
+            if (pathElement != null && pathElement.matches(Regex.REGEX_VAR)){
                 List<Object> result = processVariable(pathElement, scope, item, paths)
                 pathElement = result[0]
                 item = result[1]
@@ -135,7 +135,7 @@ class GroovyPathWalker {
 
             //if pathElement is a supported function processs the function
 
-            if (pathElement != null && pathElement.matches(REGEX_FUNC)){
+            if (pathElement != null && pathElement.matches(Regex.REGEX_FUNC)){
                 List<Object> result = processFunction(pathElement, item, paths)
                 pathElement = result[0]
                 item = result[1]
@@ -152,9 +152,9 @@ class GroovyPathWalker {
     @CompileStatic
     private static List processFunction(String pathElement, item, List paths) {
         // get function argument element if exist
-        def argument = processIndex(pathElement, START_FUNC, END_FUNC)
+        def argument = processIndex(pathElement, Regex.START_FUNC, Regex.END_FUNC)
         // get key part of path element
-        pathElement = normalizePathElement(pathElement, START_FUNC)
+        pathElement = normalizePathElement(pathElement, Regex.START_FUNC)
         //run the function
         item = runFunction(pathElement, argument, item)
         // get new path element and advance in the walk
@@ -165,7 +165,7 @@ class GroovyPathWalker {
     @CompileStatic
     private static List processVariable(String pathElement, Map scope, item, List paths) {
         // get key part of path element
-        pathElement = normalizePathElement(pathElement, START_VAR, END_VAR)
+        pathElement = normalizePathElement(pathElement, Regex.START_VAR, Regex.END_VAR)
         // retrieve the value from scope
         def scopeValue = scope.get(pathElement)
         //def element = null
@@ -179,9 +179,9 @@ class GroovyPathWalker {
     @CompileStatic
     private static List processList(String pathElement, item, List paths) {
         // get index of list
-        def index = processIndex(pathElement, START_LIST, END_LIST)
+        def index = processIndex(pathElement, Regex.START_LIST, Regex.END_LIST)
         // get key part of path element
-        pathElement = normalizePathElement(pathElement, START_LIST)
+        pathElement = normalizePathElement(pathElement, Regex.START_LIST)
         // get item from the path element
         item = itemFromList(pathElement, item, index as int)
         // get new path element and advance in the walk
@@ -290,13 +290,13 @@ class GroovyPathWalker {
     @CompileStatic
     public static String normalizePath(String path) {
         //replacing double quotes with .pathBeetweenDoubleQuotes
-        path = path.replaceAll(NORMALIZED_PATH_DOUBLE_QUOTES, '.$1')
+        path = path.replaceAll(Regex.NORMALIZED_PATH_DOUBLE_QUOTES, '.$1')
         //replacing single quotes with .pathBeetweenSingleQuotes
-        path = path.replaceAll(NORMALIZED_PATH_SINGLE_QUOTES, '.$1')
+        path = path.replaceAll(Regex.NORMALIZED_PATH_SINGLE_QUOTES, '.$1')
         //replacing variable with .pathBeetweenSquareBrackets
-        path = path.replaceAll(NORMALIZED_PATH_VARIABLE, '.\\$$1\\$')
+        path = path.replaceAll(Regex.NORMALIZED_PATH_VARIABLE, '.\\$$1\\$')
         //removing quesion mark
-        path = path.replaceAll(NORMALIZED_PATH_QUESTIONE_MARK, '')
+        path = path.replaceAll(Regex.NORMALIZED_PATH_QUESTIONE_MARK, '')
         return path
     }
 
@@ -313,14 +313,14 @@ class GroovyPathWalker {
 
         paths.each {
             String pathElement = it
-            supported = supported && !pathElement.matches(REGEX_UNSUPPORTED_BRACES)
-            supported = supported && !pathElement.matches(REGEX_UNSUPPORTED_STARTS)
-            supported = supported && !pathElement.matches(REGEX_UNSUPPORTED_OPERATOR)
-            supported = supported && !pathElement.matches(REGEX_UNSUPPORTED_EXCLAMATION_MARK)
-            supported = supported && !pathElement.matches(REGEX_UNSUPPORTED_ASSIGNEMENT_OPERATOR)
+            supported = supported && !pathElement.matches(Regex.REGEX_UNSUPPORTED_BRACES)
+            supported = supported && !pathElement.matches(Regex.REGEX_UNSUPPORTED_STARTS)
+            supported = supported && !pathElement.matches(Regex.REGEX_UNSUPPORTED_OPERATOR)
+            supported = supported && !pathElement.matches(Regex.REGEX_UNSUPPORTED_EXCLAMATION_MARK)
+            supported = supported && !pathElement.matches(Regex.REGEX_UNSUPPORTED_ASSIGNEMENT_OPERATOR)
 
-            if (pathElement.matches(REGEX_FUNC)){
-                def func = normalizePathElement(pathElement,START_FUNC)
+            if (pathElement.matches(Regex.REGEX_FUNC)){
+                def func = normalizePathElement(pathElement,Regex.START_FUNC)
                 supported = supported && func in ['size','pick','values','keySet']
             }
 
@@ -331,27 +331,5 @@ class GroovyPathWalker {
         return supported
     }
 
-    public static final String REGEX_FUNC = "\\w*\\(\\d?\\)"
-    public static final String REGEX_VAR = '\\$\\D*\\$'
-    public static final String REGEX_LIST = "\\w*\\[\\d*\\]"
-
-    public static final String START_FUNC = '('
-    public static final String START_VAR = '$'
-    public static final String START_LIST = '['
-
-    public static final String END_FUNC = ')'
-    public static final String END_VAR = '$'
-    public static final String END_LIST = ']'
-
-    public static final String NORMALIZED_PATH_DOUBLE_QUOTES = "\\[\"(.*?)\"\\]"
-    public static final String NORMALIZED_PATH_SINGLE_QUOTES = "\\[\'(.*?)\'\\]"
-    public static final String NORMALIZED_PATH_VARIABLE = "\\[(\\D*)\\]"
-    public static final String NORMALIZED_PATH_QUESTIONE_MARK = "\\?"
-
-    public static final String REGEX_UNSUPPORTED_BRACES = "\\{.*?\\}"
-    public static final String REGEX_UNSUPPORTED_STARTS = "\\*"
-    public static final String REGEX_UNSUPPORTED_OPERATOR = ".*?\\->.*?"
-    public static final String REGEX_UNSUPPORTED_EXCLAMATION_MARK = ".*?\\!.*?"
-    public static final String REGEX_UNSUPPORTED_ASSIGNEMENT_OPERATOR = ".*?\\=.*?"
 
 }
