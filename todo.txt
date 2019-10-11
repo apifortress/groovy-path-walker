@@ -14,3 +14,5 @@ con la prima lettera in maiuscolo. IL metodo esiste? Sì lo chiamo, altrimenti s
 
 accessor per nome nelle liste. implementare get
 verificare presenza each.
+
+rivedere case object['accessor1']['accessor2']["accessor3"]

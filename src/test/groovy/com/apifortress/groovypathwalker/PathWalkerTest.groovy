@@ -33,6 +33,12 @@ class PathWalkerTest {
         navigate(map,path,'2')
     }
     @Test
+    public void testListQ1() {
+        def map = ['1', '2', '3', '4', '5']
+        def path = '["1"]'
+        navigateWithException(map,path)
+    }
+    @Test
     public void testListQuote() {
         def map = ['foo':['1', '2', '3', '4', '5']]
         def path = 'foo[\'1\']'

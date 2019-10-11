@@ -17,7 +17,7 @@ public class Regex {
     public static final String END_LIST = "]";
 
     public static final String NORMALIZED_PATH_DOUBLE_QUOTES = "\\[\"(.*?)\"\\]";
-    //public static final String NORMALIZED_PATH_SINGLE_QUOTES = "\\[\'(.*?)\'\\]";
+    public static final String NORMALIZED_PATH_SINGLE_QUOTES = "\\[\'(.*?)\'\\]";
     public static final String NORMALIZED_PATH_VARIABLE = "\\[([a-z]*?)\\]";
     public static final String NORMALIZED_PATH_QUESTIONE_MARK = "\\?";
 

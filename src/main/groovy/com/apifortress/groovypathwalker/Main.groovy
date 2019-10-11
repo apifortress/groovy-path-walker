@@ -11,6 +11,10 @@ class Main {
         if (path.matches(Regex.REGEX_SQUARE_BRACKETS_DOUBLE_QUOTE))
             println "math"
 
+        path = 'object[\'accessor1\'][\'accessor2\']["accessor3"]'
+
+        List paths = path.split('\\[').toList()
+        println paths
 
     }
 }
