@@ -1,7 +1,10 @@
 package com.apifortress.groovypathwalker
 
 import groovy.transform.CompileStatic
-import com.apifortress.groovypathwalker.utils.impl.Functions
+import com.apifortress.groovypathwalker.utils.Functions
+
+import java.lang.reflect.Field
+import java.lang.reflect.Method
 
 /**
  * © 2019 API Fortress
@@ -64,13 +67,51 @@ class GroovyPathWalker {
     private static def processPathElement(String pathElement, List paths,def item, def scope) {
         def result = item
 
-        if (result instanceof Map && pathElement != null
-            || result instanceof String && pathElement != null)
+        if (item instanceof Map && pathElement != null
+            || item instanceof String && pathElement != null)
         {
             try {
                 result = processWalk(item.get(pathElement), paths, scope)
             } catch (Exception ex) {
-                result = "Exception: " + ex.toString()
+                //result = "Exception: " + ex.toString()
+                Field[] fields = item.getClass().getFields()
+                String[] fieldsNames = new String[fields.length];
+                for (int i = 0; i < fieldsNames.length; i++)
+                {
+                    fieldsNames[i] = fields[i].getName();
+                }
+                if (pathElement in fieldsNames) {
+                    Field field = item.getClass().getField(pathElement)
+                    result = field.get(item)
+                } else {
+                    try {
+                        Method method = null;
+                        method = item.getClass().getMethod("get" + pathElement.capitalize(), null);
+                        result = (String) method.invoke(item, new Object[0]);
+                    }
+                    catch (NoSuchMethodException exc) {
+                        result = "Exception: " + exc.toString()
+                    }
+                }
+            }
+        } else if (!item instanceof List && item instanceof Object){
+            Field[] fields = item.getClass().getFields()
+            String[] fieldsNames = new String[fields.length];
+            for (int i = 0; i < fieldsNames.length; i++)
+            {
+                fieldsNames[i] = fields[i].getName();
+            }
+            if (pathElement in fieldsNames) {
+                Field field = item.getClass().getField(pathElement)
+                result = field.get(item)
+            } else {
+                try {
+                    Method method = null;
+                    method = item.getClass().getMethod("get" + pathElement.capitalize(), null);
+                    result = (String) method.invoke(item, new Object[0]);
+                }
+                catch (NoSuchMethodException exc) {
+                }
             }
         }
 

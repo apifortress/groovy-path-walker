@@ -1,23 +1,12 @@
-strutture per mettere compile static sui ritorni multipli ?
-
-a.b.c.size()
-a.g.c.pick()
-a.b.c.pick(5)
-a.b.c.values()
-a.b.c.keySet()
-a.b.c.split(',')
-
-a.b.c.unique()
-
-boolean isSupported(String expression)
-
-dovrebbe verificare che:
-non ci siano parentesi graffe
-non ci siano parentesi tonde se non sono presenti i metodi supportati
-non ci siano *
-non ci siano ->
-
 artefatto su mavenrepository
 
-ti annoto altri casi in cui il walk non è supportato. presenza di:
-! e =
+oggetti non mape non liste.
+java reflection
+
+
+l'idea è questa.
+- sei un oggetto e non sei una mappa o una lista? sì.Stringhe ?
+- dammi la lista delle tue proprietà pubbliche. C'è quella che cerco?
+r1) sì. finito
+r2) no. cerco un metodo che si chiami getCampo, in cui Campo è il nome del frammento nel percorso,
+con la prima lettera in maiuscolo. IL metodo esiste? Sì lo chiamo, altrimenti sega

@@ -1,4 +1,4 @@
-package com.apifortress.groovypathwalker.utils.impl
+package com.apifortress.groovypathwalker.utils
 
 class Functions {
     public static String size(def item) {
