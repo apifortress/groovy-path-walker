@@ -6,6 +6,7 @@ public class Regex {
     public static final String REGEX_VAR = "\\$\\D*\\$";
     public static final String REGEX_LIST = "\\w*\\[\\d*\\]";
     public static final String REGEX_SQUARE_BRACKETS_SINGLE_QUOTE = "\\w*\\[\'\\w*\'\\]";
+    public static final String REGEX_SQUARE_BRACKETS_DOUBLE_QUOTE = "\\w*\\[\"\\w*\"\\]";
 
     public static final String START_FUNC = "(";
     public static final String START_VAR = "$";

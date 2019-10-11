@@ -49,9 +49,12 @@ class GroovyPathWalker {
             result = item
         else {
             //get path Element, removing it from path element list
-            (pathElement, paths, item) = processInit(paths,item,scope)
-            if (result == null)
+            try {
+                (pathElement, paths, item) = processInit(paths, item, scope)
                 result = processPathElement(pathElement, paths, item, scope)
+            } catch(Exception ex) {
+                result = ex.getMessage()
+            }
         }
 
         return result
@@ -143,13 +146,17 @@ class GroovyPathWalker {
                 paths = (List) result[2]
             }
 
-            if (pathElement != null && pathElement.matches(Regex.REGEX_SQUARE_BRACKETS_SINGLE_QUOTE)) {
-                if (item instanceof Map) {
-                    List<Object> result = processSaureBracketsSingleQuote(pathElement, item, paths)
-                    pathElement = result[0]
-                    item = result[1]
-                    paths = (List) result[2]
-                }
+            if (pathElement != null &&
+                    (pathElement.matches(Regex.REGEX_SQUARE_BRACKETS_SINGLE_QUOTE)
+                     || pathElement.matches(Regex.REGEX_SQUARE_BRACKETS_DOUBLE_QUOTE)
+                    )
+                ) {
+                //if (item instanceof Map) {
+                List<Object> result = processSquareBracketsSingleQuote(pathElement, item, paths)
+                pathElement = result[0]
+                item = result[1]
+                paths = (List) result[2]
+                //}
             }
 
             //if pathElement is a variable of scope, process the element to get the value of the variable
@@ -216,18 +223,18 @@ class GroovyPathWalker {
         return Arrays.asList(pathElement, item, paths)
     }
 
-
-    private static List processSaureBracketsSingleQuote(String pathElement, def item, List paths) {
+    private static List processSquareBracketsSingleQuote(String pathElement, def item, List paths) {
         // get index of list
         String index = processIndex(pathElement, "[", "]")
         index = index.substring(1)
         index = index.substring(0,index.length()-1)
-        pathElement = normalizePathElement(pathElement, "['")
+        pathElement = normalizePathElement(pathElement, "[")
         item = item.get(pathElement).get(index)
         if (paths.size() > 0) pathElement = paths.remove(0) else pathElement = null
 
         return Arrays.asList(pathElement, item, paths)
     }
+
     /**
      * Gets a item from a list given an index
      * @param pathElement
@@ -330,7 +337,7 @@ class GroovyPathWalker {
     @CompileStatic
     public static String normalizePath(String path) {
         //replacing double quotes with .pathBeetweenDoubleQuotes
-        path = path.replaceAll(Regex.NORMALIZED_PATH_DOUBLE_QUOTES, '.$1')
+        //path = path.replaceAll(Regex.NORMALIZED_PATH_DOUBLE_QUOTES, '.$1')
         //replacing single quotes with .pathBeetweenSingleQuotes
         //path = path.replaceAll(Regex.NORMALIZED_PATH_SINGLE_QUOTES, '.$1')
         //replacing variable with .pathBeetweenSquareBrackets
