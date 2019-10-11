@@ -74,48 +74,35 @@ class GroovyPathWalker {
                 result = processWalk(item.get(pathElement), paths, scope)
             } catch (Exception ex) {
                 //result = "Exception: " + ex.toString()
-                Field[] fields = item.getClass().getFields()
-                String[] fieldsNames = new String[fields.length];
-                for (int i = 0; i < fieldsNames.length; i++)
-                {
-                    fieldsNames[i] = fields[i].getName();
-                }
-                if (pathElement in fieldsNames) {
-                    Field field = item.getClass().getField(pathElement)
-                    result = field.get(item)
-                } else {
-                    try {
-                        Method method = null;
-                        method = item.getClass().getMethod("get" + pathElement.capitalize(), null);
-                        result = (String) method.invoke(item, new Object[0]);
-                    }
-                    catch (NoSuchMethodException exc) {
-                        result = "Exception: " + exc.toString()
-                    }
-                }
+                result = byReflection(item, pathElement, result)
             }
-        } else if (!item instanceof List && item instanceof Object){
-            Field[] fields = item.getClass().getFields()
-            String[] fieldsNames = new String[fields.length];
-            for (int i = 0; i < fieldsNames.length; i++)
-            {
-                fieldsNames[i] = fields[i].getName();
-            }
-            if (pathElement in fieldsNames) {
-                Field field = item.getClass().getField(pathElement)
-                result = field.get(item)
-            } else {
-                try {
-                    Method method = null;
-                    method = item.getClass().getMethod("get" + pathElement.capitalize(), null);
-                    result = (String) method.invoke(item, new Object[0]);
-                }
-                catch (NoSuchMethodException exc) {
-                }
-            }
+        } else if (!item instanceof List && !item instanceof Map && !item instanceof String && item instanceof Object){
+            result = byReflection(item, pathElement, result)
         }
 
         return result
+    }
+
+    private static Object byReflection(item, String pathElement, result) {
+        Field[] fields = item.getClass().getFields()
+        String[] fieldsNames = new String[fields.length];
+        for (int i = 0; i < fieldsNames.length; i++) {
+            fieldsNames[i] = fields[i].getName();
+        }
+        if (pathElement in fieldsNames) {
+            Field field = item.getClass().getField(pathElement)
+            result = field.get(item)
+        } else {
+            try {
+                Method method = null;
+                method = item.getClass().getMethod("get" + pathElement.capitalize(), null);
+                result = (String) method.invoke(item, new Object[0]);
+            }
+            catch (NoSuchMethodException exc) {
+                result = "Exception: " + exc.toString()
+            }
+        }
+        result
     }
 
     /**
