@@ -36,19 +36,22 @@ class PathWalkerTest {
     public void testListQ1() {
         def map = ['1', '2', '3', '4', '5']
         def path = '["1"]'
-        navigateWithException(map,path)
+        navigate(map,path,'2')
+        //navigateWithException(map,path)
     }
     @Test
     public void testListQuote() {
         def map = ['foo':['1', '2', '3', '4', '5']]
         def path = 'foo[\'1\']'
-        navigateWithException(map,path)
+        navigate(map,path,'2')
+        //navigateWithException(map,path)
     }
     @Test
     public void testListDoubleQuote() {
         def map = ['foo':['1', '2', '3', '4', '5']]
         def path = 'foo["1"]'
-        navigateWithException(map,path)
+        navigate(map,path,'2')
+        //navigateWithException(map,path)
     }
 
     @Test
@@ -87,7 +90,7 @@ class PathWalkerTest {
         def path = 'foo.cose.foo[\'a\']'
         navigateWithException(map,path)
     }
-    /*
+
     @Test
     public void testArrayInMiddleAccesDoppioAppice() {
         def map = ['foo': ['cose': [['foo':'bar'],['foo1':'bar1']]]]
@@ -95,22 +98,21 @@ class PathWalkerTest {
         navigate(map,path,'bar1')
     }
 
-     */
-/*
+
     @Test
     public void testDoppioAppiceListInMidleDoppioAppice() {
         def map = ['foo': ['cose': [['foo':'bar'],['foo1':'bar1']]]]
         def path = 'foo["cose"][1]["foo1"]'
         navigate(map,path,'bar1')
-    }*/
-    /*
+    }
+
     @Test
     public void testAppiciMixed() {
         def map = ['foo': ['cose': ['foo': ['foo1': 'bar1']]]]
         def path = 'foo["cose"][\'foo\']["foo1"]'
         navigate(map,path,'bar1')
     }
-    */
+
     @Test
     public void testNotExistingEndingKey() {
         def map = ['foo': ['cose': ['foo': ['foo1': 'bar1']]]]

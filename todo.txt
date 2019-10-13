@@ -16,3 +16,8 @@ accessor per nome nelle liste. implementare get
 verificare presenza each.
 
 rivedere case object['accessor1']['accessor2']["accessor3"]
+
+metto tutto tra punti epoi splitto
+object.['accessor1'].['accessor2'].["accessor3"]
+splitto
+in base a quello che trovo agisco
