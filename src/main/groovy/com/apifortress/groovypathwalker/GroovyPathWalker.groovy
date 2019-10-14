@@ -51,7 +51,7 @@ class GroovyPathWalker {
      * @param p
      * @return
      */
-    private static List processPlain(item, String p) {
+    private static List processPlain(def item, String p) {
         boolean stop = false
         //if it's map or list get the value. If map the result is guaranteed, if list and support get method then result is guaranteed else exception wil be thrown
         if (item instanceof Map || item instanceof List) {
@@ -70,7 +70,7 @@ class GroovyPathWalker {
                 stop = true
             }
         }
-        [item, stop]
+        return [item, stop]
     }
 
     /**
@@ -212,6 +212,7 @@ class GroovyPathWalker {
      * @param result
      * @return
      */
+    @CompileStatic
     private static Object byReflection(Object item, String p) {
         def result = null
         //retieves properties
