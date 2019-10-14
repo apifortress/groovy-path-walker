@@ -84,27 +84,26 @@ class GroovyPathWalker {
     private static List processSquared(def p, item, scope) {
         p = p.substring(p.indexOf('[') + 1, p.indexOf(']'))
         boolean stop = false
-        //get value between quotes or double quotes
+
+        //get value between quotes or double quotes it is always an accessor
         if (p.startsWith('\'') && p.endsWith('\'')
                 || p.startsWith('"') && p.endsWith('"')
         ) {
             p = p.substring(1, p.length() - 1)
+        } else {
+            //if not between quotes then it is a variable or a number
+            if (p.isNumber())
+                p = p as int
+            else {
+                //if i have a scope let's try to recover the value from the scope, if note present in the scope the value is the path element itself
+                def pScope
+                if (scope) pScope = scope.get(p)
+                if (pScope) p = pScope
+            }
         }
 
-        //if i have a scope let's try to recover the value from the scope, if note present in the scope the value is the path element itself
-        def pScope
-        if (scope) pScope = scope.get(p)
-        if (pScope) p = pScope
         //if item it's map then get the element
-        if (item instanceof Map) {
-            item = item.get(p)
-            //if list...
-        } else if (item instanceof List) {
-            //try to convert it in a number
-            try {
-                p = p as int
-            } catch (Exception e) {}
-            //then try to get the element
+        if (item instanceof Map || item instanceof List) {
             try {
                 item = item.get(p)
             } catch (Exception e) {
@@ -112,7 +111,7 @@ class GroovyPathWalker {
                 stop = true
             }
         }
-        [item, stop]
+        return [item, stop]
     }
 
     /**

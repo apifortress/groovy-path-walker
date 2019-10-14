@@ -36,22 +36,22 @@ class PathWalkerTest {
     public void testListQ1() {
         def map = ['1', '2', '3', '4', '5']
         def path = '["1"]'
-        navigate(map,path,'2')
-        //navigateWithException(map,path)
+        //navigate(map,path,'2')
+        navigateWithException(map,path)
     }
     @Test
     public void testListQuote() {
         def map = ['foo':['1', '2', '3', '4', '5']]
         def path = 'foo[\'1\']'
-        navigate(map,path,'2')
-        //navigateWithException(map,path)
+        //navigate(map,path,'2')
+        navigateWithException(map,path)
     }
     @Test
     public void testListDoubleQuote() {
         def map = ['foo':['1', '2', '3', '4', '5']]
         def path = 'foo["1"]'
-        navigate(map,path,'2')
-        //navigateWithException(map,path)
+        //navigate(map,path,'2')
+        navigateWithException(map,path)
     }
 
     @Test
@@ -119,6 +119,7 @@ class PathWalkerTest {
         def path = 'foo.cose.foo.foo1.coo'
         navigateWithException(map,path)
     }
+
     @Test
     public void testQuestionMarkk() {
         def map = ['foo': ['cose': ['foo': ['foo1': 'bar1']]]]
