@@ -6,6 +6,11 @@ import com.apifortress.groovypathwalker.utils.Functions
 import java.lang.reflect.Field
 import java.lang.reflect.Method
 
+/**
+ * © 2019 API Fortress
+ * @author Diego Brach
+ * Walks in depth trought a groovy path
+ */
 class GroovyPathWalker {
 
     /**
@@ -21,12 +26,15 @@ class GroovyPathWalker {
         if (!item) item = scope
         //walks the path list
         for (def p in paths){
+            //if beetween square brackets
             if (p.startsWith('[') && p.endsWith(']')) {
                 boolean stop = false
                 (item, stop) = processSquared(p, item, scope)
                 if (stop) break;
+                // if matches function pattern
             } else if (p.matches(Regex.REGEX_FUNC)){
                 item = processFunction(p,item)
+                //otherwise plain accessor
             } else {
                 boolean stop = false
                 (item, stop) = processPlain(item, p)
@@ -37,14 +45,22 @@ class GroovyPathWalker {
         return item
     }
 
+    /**
+     * process plain path element, in other words path elements not between square brackets
+     * @param item
+     * @param p
+     * @return
+     */
     private static List processPlain(item, String p) {
         boolean stop = false
+        //if it's map or list get the value. If map the result is guaranteed, if list and support get method then result is guaranteed else exception wil be thrown
         if (item instanceof Map || item instanceof List) {
             try {
                 item = item.get(p)
             } catch (Exception e) {
                 item = e.getMessage()
             }
+            // if it's generic object let's try using reflection.
         } else if (item instanceof Object) {
             try {
                 item = byReflection(item, p)
@@ -57,27 +73,38 @@ class GroovyPathWalker {
         [item, stop]
     }
 
+    /**
+     * Process complex plain element, in other wors elements between square brackests. a path element between square brackets can be an accessor of a map, an index
+     * of a list or a scope variable
+     * @param p
+     * @param item
+     * @param scope
+     * @return
+     */
     private static List processSquared(def p, item, scope) {
         p = p.substring(p.indexOf('[') + 1, p.indexOf(']'))
         boolean stop = false
+        //get value between quotes or double quotes
         if (p.startsWith('\'') && p.endsWith('\'')
                 || p.startsWith('"') && p.endsWith('"')
         ) {
             p = p.substring(1, p.length() - 1)
         }
 
+        //if i have a scope let's try to recover the value from the scope, if note presentin the scope the value is the path element itself
+        def pScope
+        if (scope) pScope = scope.get(p)
+        if (pScope) p = pScope
+        //if item it's map then get the element
         if (item instanceof Map) {
-            //variable?
-            def pScope
-            if (scope) pScope = scope.get(p)
-            if (pScope) p = pScope
             item = item.get(p)
+            //if list...
         } else if (item instanceof List) {
+            //try to convert it in a number
             try {
                 p = p as int
-            } catch (Exception e) {
-            }
-
+            } catch (Exception e) {}
+            //then try to get the element
             try {
                 item = item.get(p)
             } catch (Exception e) {
@@ -88,6 +115,12 @@ class GroovyPathWalker {
         [item, stop]
     }
 
+    /**
+     * Process a supported function
+     * @param p
+     * @param item
+     * @return
+     */
     @CompileStatic
     private static def processFunction(String p, item) {
         // get function argument element if exist
