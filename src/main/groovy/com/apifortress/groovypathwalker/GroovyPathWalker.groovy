@@ -91,7 +91,7 @@ class GroovyPathWalker {
             p = p.substring(1, p.length() - 1)
         }
 
-        //if i have a scope let's try to recover the value from the scope, if note presentin the scope the value is the path element itself
+        //if i have a scope let's try to recover the value from the scope, if note present in the scope the value is the path element itself
         def pScope
         if (scope) pScope = scope.get(p)
         if (pScope) p = pScope
