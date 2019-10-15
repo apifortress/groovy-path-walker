@@ -125,7 +125,8 @@ class PathWalkerTest {
     public void testNotExistingEndingKey() {
         def map = ['foo': ['cose': ['foo': ['foo1': 'bar1']]]]
         def path = 'foo.cose.foo.foo1.coo'
-        navigateWithException(map,path)
+        navigate(map,path,null)
+        //navigateWithException(map,path)
     }
 
     @Test

@@ -27,19 +27,14 @@ class GroovyPathWalker {
         //walks the path list
         for (def p in paths){
             //if beetween square brackets
-            if (p.startsWith('[') && p.endsWith(']')) {
-                boolean stop = false
-                (item, stop) = processSquared(p, item, scope)
-                if (stop) break;
-                // if matches function pattern
-            } else if (p.matches(Regex.REGEX_FUNC)){
+            if (p.startsWith('[') && p.endsWith(']'))
+                item = processSquared(p, item, scope)
+            // if matches function pattern
+            else if (p.matches(Regex.REGEX_FUNC))
                 item = processFunction(p,item)
-                //otherwise plain accessor
-            } else {
-                boolean stop = false
-                (item, stop) = processPlain(item, p)
-                if (stop) break;
-            }
+            //otherwise plain accessor
+            else
+                item = processPlain(item, p)
         }
 
         return item
@@ -51,26 +46,16 @@ class GroovyPathWalker {
      * @param p
      * @return
      */
-    private static List processPlain(def item, String p) {
+    private static def processPlain(def item, String p) {
         boolean stop = false
         //if it's map or list get the value. If map the result is guaranteed, if list and support get method then result is guaranteed else exception wil be thrown
-        if (item instanceof Map || item instanceof List) {
-            try {
+        if (item instanceof Map || item instanceof List)
                 item = item.get(p)
-            } catch (Exception e) {
-                item = e.getMessage()
-            }
-            // if it's generic object let's try using reflection.
-        } else if (item instanceof Object) {
-            try {
+        // if it's generic object let's try using reflection.
+        else if (item instanceof Object)
                 item = byReflection(item, p)
-                if (!item) item = item.get(p)
-            } catch (Exception e) {
-                item = "Exception: " + e.toString()
-                stop = true
-            }
-        }
-        return [item, stop]
+
+        return item
     }
 
     /**
@@ -81,20 +66,17 @@ class GroovyPathWalker {
      * @param scope
      * @return
      */
-    private static List processSquared(def p, item, scope) {
+    private static def processSquared(def p, item, scope) {
         p = p.substring(p.indexOf('[') + 1, p.indexOf(']'))
-        boolean stop = false
 
         //get value between quotes or double quotes it is always an accessor
-        if (p.startsWith('\'') && p.endsWith('\'')
-            || p.startsWith('"') && p.endsWith('"')
-        ) {
+        if (p.startsWith('\'') && p.endsWith('\'') || p.startsWith('"') && p.endsWith('"'))
             p = p.substring(1, p.length() - 1)
-        } else {
+        else {
             //if not between quotes then it is a variable or a number
-            if (p.isNumber())
+            if (p.isNumber()) {
                 p = p as int
-            else {
+            } else {
                 //if i have a scope let's try to recover the value from the scope, if note present in the scope the value is the path element itself
                 def pScope
                 if (scope) pScope = scope.get(p)
@@ -108,10 +90,9 @@ class GroovyPathWalker {
                 item = item.get(p)
             } catch (Exception e) {
                 item = e.getMessage()
-                stop = true
             }
         }
-        return [item, stop]
+        return item
     }
 
     /**
@@ -228,13 +209,9 @@ class GroovyPathWalker {
 
         //check if the method with p name exist
         if ("get" + p.capitalize() in methodsNames){
-            try {
-                Method method = item.getClass().getMethod("get" + p.capitalize(), null);
-                result = method.invoke(item, new Object[0]);
-            }
-            catch (NoSuchMethodException exc) {
-                result = "Exception: " + exc.toString()
-            }
+            Method method = item.getClass().getMethod("get" + p.capitalize(), null);
+            result = method.invoke(item, new Object[0]);
+
         }
         return result
     }

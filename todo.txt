@@ -1,23 +1,15 @@
-artefatto su mavenrepository
+quindi semplificando:
+expression : 'foobar'
+result: foobar
 
-oggetti non mape non liste.
-java reflection
+expression: 27
+result (int) 27
 
+expression: 27.5
+result (double) 27.5
 
-l'idea è questa.
-- sei un oggetto e non sei una mappa o una lista? sì.Stringhe ?
-- dammi la lista delle tue proprietà pubbliche. C'è quella che cerco?
-r1) sì. finito
-r2) no. cerco un metodo che si chiami getCampo, in cui Campo è il nome del frammento nel percorso,
-con la prima lettera in maiuscolo. IL metodo esiste? Sì lo chiamo, altrimenti sega
-
-
-accessor per nome nelle liste. implementare get
-verificare presenza each.
-
-rivedere case object['accessor1']['accessor2']["accessor3"]
-
-metto tutto tra punti epoi splitto
-object.['accessor1'].['accessor2'].["accessor3"]
-splitto
-in base a quello che trovo agisco
+if carattere è intero:
+  if expression contiene '.':
+    Double.valueOf(expression)
+  else
+    Integer.valueOf(expression)
