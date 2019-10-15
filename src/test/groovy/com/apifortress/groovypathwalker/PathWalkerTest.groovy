@@ -9,6 +9,24 @@ import static org.junit.Assert.*
 
 class PathWalkerTest {
     @Test
+    public void testString() {
+        def map = ['payload':['foo': ['cose': ['foo': ['foo1': 'bar1']]]]]
+        def path = '\'bar1\''
+        navigate(null,path,'\'bar1\'',map)
+    }
+    @Test
+    public void testInt() {
+        def map = ['payload':['foo': ['cose': ['foo': ['foo1': 'bar1']]]]]
+        def path = '666'
+        navigate(null,path,666,map)
+    }
+    @Test
+    public void testDouble() {
+        def map = ['payload':['foo': ['cose': ['foo': ['foo1': 'bar1']]]]]
+        def path = '66.6'
+        navigateDecimal(null,path,66.6,map)
+    }
+    @Test
     public void testPlain() {
         def map = ['payload':['foo': ['cose': ['foo': ['foo1': 'bar1']]]]]
         def path = 'payload.foo.cose.foo.foo1'
@@ -293,11 +311,18 @@ class PathWalkerTest {
         assertTrue(element.startsWith("Exception") || element.startsWith("No signature"))
     }
 
-    public void navigate(def item, String path, def expected, def scope = null,def test = true) {
+    public void navigate(def item, def path, def expected, def scope = null,def test = true) {
         printInformations(item, scope, path)
         def element = GroovyPathWalker.walk(item,path,scope)
         println "Result: " + element
         if (test) assertEquals(expected,element)
+    }
+
+    public void navigateDecimal(def item, def path, def expected, def scope = null,def test = true) {
+        printInformations(item, scope, path)
+        def element = GroovyPathWalker.walk(item,path,scope)
+        println "Result: " + element
+        if (test) assertEquals(expected,element,0)
     }
 
     public void navigateRandomValues(def item, String path, def valuesList, def scope = null) {
@@ -311,7 +336,7 @@ class PathWalkerTest {
         assertTrue(valuesIn)
     }
 
-    private void printInformations(item, scope, String path) {
+    private void printInformations(item, scope, def path) {
         println "************************"
         println "Item: " + (JsonOutput.toJson(item))
         println "Scope: " + (JsonOutput.toJson(scope))

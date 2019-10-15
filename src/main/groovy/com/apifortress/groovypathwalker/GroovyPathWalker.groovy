@@ -21,17 +21,36 @@ class GroovyPathWalker {
      * @return the walk result
      */
     public static def walk(def item,def path, def scope = null){
+        def result = plainValue(path)
+        if (!result) result = walkPath(item, path, scope)
+        return result
+    }
+
+    private static def plainValue(def path){
+        def result = null
+        if (path.startsWith('\'') && path.endsWith('\''))
+            result = path
+        else if (path.isNumber()){
+            if (path.contains('.'))
+                result = Double.valueOf(path)
+            else
+                result = Integer.valueOf(path)
+        }
+        return result
+    }
+
+    private static def walkPath(def item, def path, def scope) {
         //splits the normalized path in a liste with every single part of the pat
-        List paths = GroovyPathWalker.processPath(path)
+        List paths = processPath(path)
         if (!item) item = scope
         //walks the path list
-        for (def p in paths){
+        for (def p in paths) {
             //if beetween square brackets
             if (p.startsWith('[') && p.endsWith(']'))
                 item = processSquared(p, item, scope)
             // if matches function pattern
             else if (p.matches(Regex.REGEX_FUNC))
-                item = processFunction(p,item)
+                item = processFunction(p, item)
             //otherwise plain accessor
             else
                 item = processPlain(item, p)
@@ -177,9 +196,14 @@ class GroovyPathWalker {
      */
     @CompileStatic
     public static List processPath(String path) {
+        //we want a normalize form where every single part of the path is dot separated
+        //everything starting with a square bracket is a part of the path
+        //so we replace the opena square brack with dot square bracket
         path = path.replaceAll('\\[','.[')
         path = path.replaceAll('\\?', '')
+        //if starting with list the first element is square bracketed, so we remove the first dot
         if (path.startsWith('.')) path = path.substring(1)
+        //finally splitting the path
         List paths = path.split('\\.').toList()
         return paths
     }
