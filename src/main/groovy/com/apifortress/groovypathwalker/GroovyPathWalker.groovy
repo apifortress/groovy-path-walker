@@ -200,7 +200,6 @@ class GroovyPathWalker {
         path = path.replaceAll('\\?', '')
         if (path.startsWith('.')) path = path.substring(1)
         List paths = path.split('\\.').toList()
-        println "NEW path: " + path
         return paths
     }
 
