@@ -20,6 +20,14 @@ class PathWalkerTest {
         def path = 'foo.cose[1].foo1'
         navigate(map,path,'bar1')
     }
+
+    @Test
+    public void testListStringAccessorList() {
+        def map = ['foo': ['a','b','c']]
+        def path = 'foo[\'a\']'
+        //navigate(map,path,'bar1')
+        navigateWithException(map,path)
+    }
     @Test
     public void testListAtStart() {
         def map = [['foo': 'bar'], ['foo': 'bar1']]

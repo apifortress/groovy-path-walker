@@ -87,7 +87,7 @@ class GroovyPathWalker {
 
         //get value between quotes or double quotes it is always an accessor
         if (p.startsWith('\'') && p.endsWith('\'')
-                || p.startsWith('"') && p.endsWith('"')
+            || p.startsWith('"') && p.endsWith('"')
         ) {
             p = p.substring(1, p.length() - 1)
         } else {
@@ -211,21 +211,15 @@ class GroovyPathWalker {
      * @param result
      * @return
      */
-    @CompileStatic
+    //@CompileStatic
     private static Object byReflection(Object item, String p) {
         def result = null
         //retieves properties
         Field[] fields = item.getClass().getFields()
-        String[] fieldsNames = new String[fields.length];
-        for (int i = 0; i < fieldsNames.length; i++) {
-            fieldsNames[i] = fields[i].getName();
-        }
+        String[] fieldsNames = fields.collect{it.getName()}
         //retrieves methos
         Method[] methods = item.getClass().getDeclaredMethods()
-        String[] methodsNames = new String[methods.length];
-        for (int i = 0; i < methodsNames.length; i++) {
-            methodsNames[i] = methods[i].getName();
-        }
+        String[] methodsNames = methods.collect{it.getName()}
 
         //check if the propery with p name exist
         if (p in fieldsNames) {
@@ -237,7 +231,7 @@ class GroovyPathWalker {
         if ("get" + p.capitalize() in methodsNames){
             try {
                 Method method = item.getClass().getMethod("get" + p.capitalize(), null);
-                result = (String) method.invoke(item, new Object[0]);
+                result = method.invoke(item, new Object[0]);
             }
             catch (NoSuchMethodException exc) {
                 result = "Exception: " + exc.toString()
