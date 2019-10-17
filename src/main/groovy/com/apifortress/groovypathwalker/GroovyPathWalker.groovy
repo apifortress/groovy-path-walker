@@ -29,7 +29,7 @@ class GroovyPathWalker {
     private static def plainValue(def path){
         def result = null
         if (path.startsWith('\'') && path.endsWith('\''))
-            result = path
+            result = path[1..path.size()-2]
         else if (path.isNumber()){
             if (path.contains('.'))
                 result = Double.valueOf(path)

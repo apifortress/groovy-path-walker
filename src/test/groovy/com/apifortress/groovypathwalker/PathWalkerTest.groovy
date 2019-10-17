@@ -12,7 +12,7 @@ class PathWalkerTest {
     public void testString() {
         def map = ['payload':['foo': ['cose': ['foo': ['foo1': 'bar1']]]]]
         def path = '\'bar1\''
-        navigate(null,path,'\'bar1\'',map)
+        navigate(null,path,'bar1',map)
     }
     @Test
     public void testInt() {
