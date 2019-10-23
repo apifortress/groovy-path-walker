@@ -162,11 +162,6 @@
             <artifactId>junit</artifactId>
             <version>4.12</version>
         </dependency>
-        <dependency>
-            <groupId>com.github.dbrach77</groupId>
-            <artifactId>testmvncentral</artifactId>
-            <version>1.0.7</version>
-        </dependency>
     </dependencies>
 
     <profiles>
