@@ -14,7 +14,6 @@ class Main {
         List paths = GroovyPathWalker.processPath(path)
         println paths
         println paths.get(0)
-
     }
 }
 
