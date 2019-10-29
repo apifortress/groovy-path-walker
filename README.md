@@ -46,7 +46,7 @@ Navigation supports the following features
   - resolves built in functions.  
     Supported functions are size, pick, values, keySet
 
-## Public Methos  
+## Public Methods  
   - walk(path,scope,item): starts the structure navigation; it takes the path to navigate, the scope and the initial item (if null the scope will be the initial item)  
   - isSupported(path): checks if the path provided is supported.  
     The path is not supported if includes unsupported characters or unsupported built in functions
