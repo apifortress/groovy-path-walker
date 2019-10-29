@@ -65,7 +65,6 @@ Navigation supports the following features
     - `keySet`
 
 ## Usage examples  
-   fare un blocco di codice, puoi scrivere
   ```
   def map = ['a': ['b': ['c': ['d': 'bar']]]]  
   def scope = ['var':'d']  
@@ -73,3 +72,11 @@ Navigation supports the following features
   assert('bar'==GroovyPathWalker.walk(path,scope,map))
   ``` 
        
+## Maven
+```
+<dependency>
+  <groupId>com.apifortress</groupId>
+  <artifactId>groovy-path-walker</artifactId>
+  <version>1.0.0</version>
+</dependency>
+``` 
