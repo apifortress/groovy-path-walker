@@ -17,7 +17,8 @@ This library is meant to mitigate the security and memory drawbacks providing th
 ## Features  
 ### Input  
 Input structure can be:
-  - nested structure as a map or a list, any combination of nested structures are allowed. For example map containg a list of maps.
+  - nested structure as a map or a list, any combination of nested structures are allowed.  
+    For example map containg a list of maps.
   - simple string or simple digit  
     "foobar", 123
   - scope containing variables and the structure to navigate
