@@ -1,10 +1,12 @@
 # Groovy Path Walker  
-Groovy Path Walker, given a structure and groovy navigation path, provides a more traditional navigation and less memory impacting
-- **The given structure can be a map or a list**  
-- **The navigation path support the following features**  
+Groovy Path Walker, given a structure and a path, provides a less memory impact navigation.
+- **The given structure can be a map or a list, or a java object or a simple object as a string or a digit**  
+  Lists and maps can contains objects,maps,lists 
+- **The navigation path support the following features and formats**  
   - direct accessor; a.b.c.d
-  - accessor beetween square brackets; a[b][c][d]
+  - accessor beetween square brackets; a[b][c] or a['b']['c'] or a["b"]["c"]  
   - list indexes; list[12]
+  - any combination of previous accessors
   - resolves scope variable; variable's value will be used to navigate the structure
   - resolves object attributes and methods trought reflection
   - supports fortress built in functions; size, pick, values, keySet

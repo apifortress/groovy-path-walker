@@ -103,7 +103,7 @@ class GroovyPathWalker {
             }
         }
 
-        //if item it's map then get the element
+        //if item is a map then get the element
         if (item instanceof Map || item instanceof List) {
             try {
                 item = item.get(p)
