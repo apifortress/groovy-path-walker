@@ -54,7 +54,7 @@ Navigation supports the following features
     Unsupported characters are:
       - braces brackets: `{}`
       - star `*` 
-      - `->`
+      - indirection operator `->`
       - question mark `?`
       - exclamation mark `!`
       - assignment operator `=`  
