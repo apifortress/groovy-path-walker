@@ -1,5 +1,5 @@
-#Groovy Path Walker
-##Introdution
+# Groovy Path Walker  
+## Introduction  
 Groovy offers an easy way to navigate nested data structures.
 
 It includes two notations:
@@ -14,15 +14,15 @@ While using them is fine within the code, it becomes a problem when you need to 
 The most common way is to compile the path as a groovy script, but this has both security and memory drawbacks.  
 This library is meant to mitigate the security and memory drawbacks providing the same features of groovy navigation
   
-## Features
-### Input
+## Features  
+### Input  
 Input structure can be:
   - nested structure as a map or a list, any combination of nested structures are allowed. For example map containg a list of maps.
   - simple string or simple digit  
     "foobar", 123
   - scope containing variables and the structure to navigate
   - generic java object
-### Path   
+### Path  
 Path supports the following notations
   - direct accessor  
     a.b.c.d
