@@ -4,11 +4,11 @@ Groovy offers an easy way to navigate nested data structures.
 
 It includes two notations:
 - dot notation  
-  a.b.c.d  
+  `a.b.c.d`  
 - brackets notation  
-  a['b']['c'], a["b"]["c"]  
+  `a['b']['c']`, `a["b"]["c"]`  
 - any combination of the notations above  
-  a.b['c'].d
+  `a.b['c'].d`
 
 While using them is fine within the code, it becomes a problem when you need to navigate a data structure given a path expressed as a string.  
 The most common way is to compile the path as a groovy script, but this has both security and memory drawbacks.  
@@ -25,15 +25,15 @@ Input structure can be:
 ### Path  
 Path supports the following notations
   - direct accessor  
-    a.b.c.d
+    `a.b.c.d`
   - accessor between square brackets and quotes or double quotes  
-    a['b']['c'], a["b"]["c"]  
+    `a['b']['c']`, `a["b"]["c"]`  
   - list indexes  
-    list[12]
+    `list[12]`
   - scope variables between square brackets  
-    a[scopeVariable]
+    `a[scopeVariable]`
   - any combination of previous accessors  
-    a.b[c][12].d.e[0].e[scopeVariable]
+    `a.b[c][12].d.e[0].e[scopeVariable]`
   
 ### Navigation Features  
 Navigation supports the following features  
@@ -63,9 +63,12 @@ Navigation supports the following features
     - keySet
 
 ## Usage examples  
+   fare un blocco di codice, puoi scrivere
+  ```
   def map = ['a': ['b': ['c': ['d': 'bar1']]]]  
   def scope = ['var':'d']  
   def path = 'a.b.c[var]'
   GroovyPathWalker.walk(path,scope,map)  
-  return value will be bar1 
+  return value will be bar1   
+  ``` 
        
