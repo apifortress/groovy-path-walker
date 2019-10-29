@@ -56,7 +56,7 @@ Navigation supports the following features
       - `->`
       - question mark `?`
       - exclamation mark `!`
-      - assignment operator `=`
+      - assignment operator `=`  
     Built in functions are
     - `size`
     - `pick`
