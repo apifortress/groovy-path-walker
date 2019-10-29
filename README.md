@@ -65,7 +65,7 @@ Navigation supports the following features
 ## Usage examples  
    fare un blocco di codice, puoi scrivere
   ```
-  def map = ['a': ['b': ['c': ['d': 'bar1']]]]  
+  def map = ['a': ['b': ['c': ['d': 'bar']]]]  
   def scope = ['var':'d']  
   def path = 'a.b.c[var]'
   assert('bar'==GroovyPathWalker.walk(path,scope,map))
