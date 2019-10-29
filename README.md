@@ -37,6 +37,9 @@ Path supports the following notations
   
 ### Navigation Features  
 Navigation supports the following features  
+  - resolves direct accessors
+  - resolves bracketed accessors
+  - resolves list indexes
   - resolves scope variable. variable's value will be used to navigate the structure
   - resolves generic object attributes and methods through reflection  
     a.b.string.length
