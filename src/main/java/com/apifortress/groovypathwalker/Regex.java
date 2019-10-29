@@ -22,7 +22,7 @@ public class Regex {
     public static final String NORMALIZED_PATH_QUESTIONE_MARK = "\\?";
 
     public static final String REGEX_UNSUPPORTED_BRACES = "\\{.*?\\}";
-    public static final String REGEX_UNSUPPORTED_STARTS = "\\*";
+    public static final String REGEX_UNSUPPORTED_STAR = "\\*";
     public static final String REGEX_UNSUPPORTED_OPERATOR = ".*?\\->.*?";
     public static final String REGEX_UNSUPPORTED_EXCLAMATION_MARK = ".*?\\!.*?";
     public static final String REGEX_UNSUPPORTED_ASSIGNEMENT_OPERATOR = ".*?\\=.*?";

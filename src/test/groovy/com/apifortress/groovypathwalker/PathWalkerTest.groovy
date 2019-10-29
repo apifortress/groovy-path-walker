@@ -36,7 +36,7 @@ class PathWalkerTest {
     public void testListInMidle() {
         def map = ['foo': ['cose': [['foo': 'bar'], ['foo1': 'bar1']]]]
         def path = 'foo.cose[1].foo1'
-        navigate(map,path,'bar1')
+        navigate(map,path,'bar1',map)
     }
 
     @Test
@@ -44,84 +44,84 @@ class PathWalkerTest {
         def map = ['foo': ['a','b','c']]
         def path = 'foo[\'a\']'
         //navigate(map,path,'bar1')
-        navigateWithException(map,path)
+        navigateWithException(map,path,map)
     }
     @Test
     public void testListAtStart() {
         def map = [['foo': 'bar'], ['foo': 'bar1']]
         def path = '[1].foo'
-        navigate(map,path,'bar1')
+        navigate(map,path,'bar1',map)
     }
     @Test
     public void testList() {
         def map = ['1', '2', '3', '4', '5']
         def path = '[1]'
-        navigate(map,path,'2')
+        navigate(map,path,'2',map)
     }
     @Test
     public void testListQ1() {
         def map = ['1', '2', '3', '4', '5']
         def path = '["1"]'
         //navigate(map,path,'2')
-        navigateWithException(map,path)
+        navigateWithException(map,path,map)
     }
     @Test
     public void testListQuote() {
         def map = ['foo':['1', '2', '3', '4', '5']]
         def path = 'foo[\'1\']'
         //navigate(map,path,'2')
-        navigateWithException(map,path)
+        navigateWithException(map,path,map)
     }
     @Test
     public void testListDoubleQuote() {
         def map = ['foo':['1', '2', '3', '4', '5']]
         def path = 'foo["1"]'
         //navigate(map,path,'2')
-        navigateWithException(map,path)
+        navigateWithException(map,path,map)
     }
 
     @Test
     public void testListAtTheEnd() {
         def map = ['foo': ['cose': ['foo': ['a', 'b', 'c']]]]
         def path = 'foo.cose.foo[2]'
-        navigate(map,path,'c')
+        navigate(map,path,'c',map)
     }
     @Test
     public void testListAtTheEndWithMaps() {
         def map = ['foo': ['cose': ['foo': [['a': 'a'], ['b': 'b'], ['c': 'c']]]]]
         def path = 'foo.cose.foo[2]'
-        navigate(map,path,['c':'c'])
+        navigate(map,path,['c':'c'],map)
     }
     @Test
     public void testNotExistingKey() {
         def map = ['foo': 'bar']
         def path = 'banana'
-        navigate(map,path,null)
+        navigate(map,path,null,map)
     }
     @Test
     public void testAccesWithDoppiAppici() {
         def map = ['foo': ['cose': ['foo': ['foo1': 'bar1']]]]
         def path = 'foo.cose.foo["foo1"]'
-        navigate(map,path,'bar1')
+        navigate(map,path,'bar1',map)
     }
     @Test
     public void testAccessWithSingleAppice() {
         def map = ['foo': ['cose': ['foo': ['foo1': 'bar1']]]]
         def path = "foo.cose.foo['foo1']"
-        navigate(map,path,'bar1')
+        navigate(map,path,'bar1',map)
     }
     @Test
     public void testListAtTheEndApez() {
         def map = ['foo': ['cose': ['foo': ['a', 'b', 'c']]]]
         def path = 'foo.cose.foo[\'a\']'
-        navigateWithException(map,path)
+        navigateWithException(map,path,map)
     }
 
     @Test
     public void testArrayInMiddleAccesDoppioAppice() {
         def map = ['foo': ['cose': [['foo':'bar'],['foo1':'bar1']]]]
         def path = 'foo.cose[1]["foo1"]'
-        navigate(map,path,'bar1')
+        navigate(map,path,'bar1',map)
     }
 
 
@@ -129,21 +129,21 @@ class PathWalkerTest {
     public void testDoppioAppiceListInMidleDoppioAppice() {
         def map = ['foo': ['cose': [['foo':'bar'],['foo1':'bar1']]]]
         def path = 'foo["cose"][1]["foo1"]'
-        navigate(map,path,'bar1')
+        navigate(map,path,'bar1',map)
     }
 
     @Test
     public void testAppiciMixed() {
         def map = ['foo': ['cose': ['foo': ['foo1': 'bar1']]]]
         def path = 'foo["cose"][\'foo\']["foo1"]'
-        navigate(map,path,'bar1')
+        navigate(map,path,'bar1',map)
     }
 
     @Test
     public void testNotExistingEndingKey() {
         def map = ['foo': ['cose': ['foo': ['foo1': 'bar1']]]]
         def path = 'foo.cose.foo.foo1.coo'
-        navigate(map,path,null)
+        navigate(map,path,null,map)
         //navigateWithException(map,path)
     }
 
@@ -151,13 +151,13 @@ class PathWalkerTest {
     public void testQuestionMarkk() {
         def map = ['foo': ['cose': ['foo': ['foo1': 'bar1']]]]
         def path = 'foo.cose.foo?.foo1'
-        navigate(map, path, 'bar1')
+        navigate(map, path, 'bar1',map)
     }
     @Test
     public void testQuestionMArkNotExistingKey() {
         def map = ['foo': ['cose': ['foo': ['foo1': 'bar1']]]]
         def path = 'foo.cose.fo?.foo1'
-        navigate(map, path, null)
+        navigate(map, path, null,map)
     }
     @Test
     public void testVariable() {
@@ -304,30 +304,30 @@ class PathWalkerTest {
         assertFalse(supported)
     }
 
-    public void navigateWithException(def item, String path) {
+    public void navigateWithException(def item, String path,def scope) {
         printInformations(item, null, path)
-        String element = GroovyPathWalker.walk(item, path)
+        String element = GroovyPathWalker.walk(path,scope,item)
         println "Result: " + element
         assertTrue(element.startsWith("Exception") || element.startsWith("No signature"))
     }
 
-    public void navigate(def item, def path, def expected, def scope = null,def test = true) {
+    public void navigate(def item, def path, def expected, def scope,def test = true) {
         printInformations(item, scope, path)
-        def element = GroovyPathWalker.walk(item,path,scope)
+        def element = GroovyPathWalker.walk(path,scope,item)
         println "Result: " + element
         if (test) assertEquals(expected,element)
     }
 
-    public void navigateDecimal(def item, def path, def expected, def scope = null,def test = true) {
+    public void navigateDecimal(def item, def path, def expected, def scope,def test = true) {
         printInformations(item, scope, path)
-        def element = GroovyPathWalker.walk(item,path,scope)
+        def element = GroovyPathWalker.walk(path,scope,item)
         println "Result: " + element
         if (test) assertEquals(expected,element,0)
     }
 
-    public void navigateRandomValues(def item, String path, def valuesList, def scope = null) {
+    public void navigateRandomValues(def item, String path, def valuesList, def scope) {
         printInformations(item, scope, path)
-        def element = GroovyPathWalker.walk(item,path,scope)
+        def element = GroovyPathWalker.walk(path,scope,item)
         def valuesIn = true
         item.each {
             valuesIn = valuesIn && it in valuesList

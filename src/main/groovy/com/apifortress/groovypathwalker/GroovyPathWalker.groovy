@@ -15,12 +15,12 @@ class GroovyPathWalker {
 
     /**
      * Starts the walk trought the groovy path
-     * @param item null or starting point
      * @param path path to walk trought
      * @param scope
+     * @param item null or starting point
      * @return the walk result
      */
-    public static def walk(def item,def path, def scope = null){
+    public static def walk(def path, def scope,def item = null){
         def result = plainValue(path)
         if (!result) result = walkPath(item, path, scope)
         return result
@@ -175,7 +175,7 @@ class GroovyPathWalker {
 
         for (String p in paths){
             supported = supported && !p.matches(Regex.REGEX_UNSUPPORTED_BRACES)
-            supported = supported && !p.matches(Regex.REGEX_UNSUPPORTED_STARTS)
+            supported = supported && !p.matches(Regex.REGEX_UNSUPPORTED_STAR)
             supported = supported && !p.matches(Regex.REGEX_UNSUPPORTED_OPERATOR)
             supported = supported && !p.matches(Regex.REGEX_UNSUPPORTED_EXCLAMATION_MARK)
             supported = supported && !p.matches(Regex.REGEX_UNSUPPORTED_ASSIGNEMENT_OPERATOR)
