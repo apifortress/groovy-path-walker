@@ -68,7 +68,6 @@ Navigation supports the following features
   def map = ['a': ['b': ['c': ['d': 'bar1']]]]  
   def scope = ['var':'d']  
   def path = 'a.b.c[var]'
-  GroovyPathWalker.walk(path,scope,map)  
-  return value will be bar1   
+  assert('bar'==GroovyPathWalker.walk(path,scope,map))
   ``` 
        
