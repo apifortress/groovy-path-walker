@@ -48,19 +48,20 @@ Navigation supports the following features
 
 ## Public Methos  
   - walk(path,scope,item): starts the structure navigation; it takes the path to navigate, the scope and the initial item (if null the scope will be the initial item)  
-  - isSupported(path): checks if a path is supported.
+  - isSupported(path): checks if the path provided is supported.  
+    The path is not supported if includes unsupported characters or unsupported built in functions
     Unsupported characters are:
-      - Braces parenthesys {}
-      - star * 
-      - ->
-      - question mark ?
-      - exclamation mark !
-      - assignement operatore =
+      - braces brackets: `{}`
+      - star `*` 
+      - `->`
+      - question mark `?`
+      - exclamation mark `!`
+      - assignment operator `=`
     Built in functions are
-    - size
-    - pick
-    - values
-    - keySet
+    - `size`
+    - `pick`
+    - `values`
+    - `keySet`
 
 ## Usage examples  
    fare un blocco di codice, puoi scrivere
