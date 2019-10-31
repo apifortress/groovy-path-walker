@@ -4,7 +4,7 @@
 
     <groupId>com.apifortress</groupId>
     <artifactId>groovy-path-walker</artifactId>
-    <version>1.0.1-SNAPSHOT</version>
+    <version>1.0.1</version>
 
     <packaging>jar</packaging>
     <name>Groovy Path Walker</name>
@@ -37,7 +37,7 @@
         <connection>scm:git:git://github.com/apifortress/groovy-path-walker</connection>
         <developerConnection>scm:git:git@github.com:apifortress/groovy-path-walker.git</developerConnection>
         <url>https://github.com/apifortress/groovy-path-walker</url>
-        <tag>HEAD</tag>
+        <tag>groovy-path-walker-1.0.1</tag>
     </scm>
 
     <distributionManagement>
