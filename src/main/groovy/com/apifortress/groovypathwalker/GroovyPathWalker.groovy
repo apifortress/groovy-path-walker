@@ -1,5 +1,6 @@
 package com.apifortress.groovypathwalker
 
+import com.apifortress.parsers.xmlparser2.XmlNode
 import groovy.transform.CompileStatic
 import com.apifortress.groovypathwalker.utils.Functions
 
@@ -68,11 +69,16 @@ class GroovyPathWalker {
     private static def processPlain(def item, String p) {
         boolean stop = false
         //if it's map or list get the value. If map the result is guaranteed, if list and support get method then result is guaranteed else exception wil be thrown
-        if (item instanceof Map || item instanceof List)
-                item = item.get(p)
-        // if it's generic object let's try using reflection.
-        else if (item instanceof Object)
-                item = byReflection(item, p)
+        if (item instanceof Map || item instanceof List || item instanceof  XmlNode) {
+            def temp = item
+            item = item.get(p)
+            if (temp instanceof  XmlNode && !item) {
+                item = byReflection(temp, p)
+            }
+            // if it's generic object let's try using reflection.
+        } else if (item instanceof Object)
+            item = byReflection(item, p)
+
 
         return item
     }
@@ -104,9 +110,16 @@ class GroovyPathWalker {
         }
 
         //if item is a map then get the element
-        if (item instanceof Map || item instanceof List) {
+        if (item instanceof Map || item instanceof List || (item instanceof XmlNode && !(p instanceof Integer))) {
             try {
                 item = item.get(p)
+            } catch (Exception e) {
+                item = e.getMessage()
+            }
+        }
+        else if (item instanceof XmlNode && p instanceof Integer) {
+            try {
+                item = item.getAt(p)
             } catch (Exception e) {
                 item = e.getMessage()
             }
@@ -217,7 +230,13 @@ class GroovyPathWalker {
      */
     //@CompileStatic
     private static Object byReflection(Object item, String p) {
+        def methodPrefix = ""
+        def methodName = p
         def result = null
+        if (!(item instanceof XmlNode)) {
+            methodPrefix = "get"
+            methodName = methodPrefix + p.capitalize()
+        }
         //retieves properties
         Field[] fields = item.getClass().getFields()
         String[] fieldsNames = fields.collect{it.getName()}
@@ -232,8 +251,8 @@ class GroovyPathWalker {
         }
 
         //check if the method with p name exist
-        if ("get" + p.capitalize() in methodsNames){
-            Method method = item.getClass().getMethod("get" + p.capitalize(), null);
+        if (methodName in methodsNames){
+            Method method = item.getClass().getMethod(methodName, null);
             result = method.invoke(item, new Object[0]);
 
         }
