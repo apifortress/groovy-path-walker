@@ -1,5 +1,6 @@
 package com.apifortress.groovypathwalker
 
+import com.apifortress.parsers.xmlparser2.XmlNode
 import groovy.json.JsonOutput
 import groovy.json.internal.LazyMap
 import groovy.util.slurpersupport.GPathResult
@@ -59,21 +60,21 @@ class PathWalkerTest {
         navigate(map,path,'2',map)
     }
     @Test
-    public void testListQ1() {
+    public void testListDoubleQuote() {
         def map = ['1', '2', '3', '4', '5']
         def path = '["1"]'
         //navigate(map,path,'2')
         navigateWithException(map,path,map)
     }
     @Test
-    public void testListQuote() {
+    public void testListSingleQuote() {
         def map = ['foo':['1', '2', '3', '4', '5']]
         def path = 'foo[\'1\']'
         //navigate(map,path,'2')
         navigateWithException(map,path,map)
     }
     @Test
-    public void testListDoubleQuote() {
+    public void testAccessorListDoubleQuote() {
         def map = ['foo':['1', '2', '3', '4', '5']]
         def path = 'foo["1"]'
         //navigate(map,path,'2')
@@ -99,41 +100,40 @@ class PathWalkerTest {
         navigate(map,path,null,map)
     }
     @Test
-    public void testAccesWithDoppiAppici() {
+    public void testAccesWithDoubleQuotes() {
         def map = ['foo': ['cose': ['foo': ['foo1': 'bar1']]]]
         def path = 'foo.cose.foo["foo1"]'
         navigate(map,path,'bar1',map)
     }
     @Test
-    public void testAccessWithSingleAppice() {
+    public void testAccessWithSingleQuote() {
         def map = ['foo': ['cose': ['foo': ['foo1': 'bar1']]]]
         def path = "foo.cose.foo['foo1']"
         navigate(map,path,'bar1',map)
     }
     @Test
-    public void testListAtTheEndApez() {
+    public void testListAtTheEndSingleQuote() {
         def map = ['foo': ['cose': ['foo': ['a', 'b', 'c']]]]
         def path = 'foo.cose.foo[\'a\']'
         navigateWithException(map,path,map)
     }
 
     @Test
-    public void testArrayInMiddleAccesDoppioAppice() {
+    public void testListDoubleQuotes() {
         def map = ['foo': ['cose': [['foo':'bar'],['foo1':'bar1']]]]
         def path = 'foo.cose[1]["foo1"]'
         navigate(map,path,'bar1',map)
     }
 
-
     @Test
-    public void testDoppioAppiceListInMidleDoppioAppice() {
+    public void testDoubleQuoteListDoubleQuotes() {
         def map = ['foo': ['cose': [['foo':'bar'],['foo1':'bar1']]]]
         def path = 'foo["cose"][1]["foo1"]'
         navigate(map,path,'bar1',map)
     }
 
     @Test
-    public void testAppiciMixed() {
+    public void testMixedQuotes() {
         def map = ['foo': ['cose': ['foo': ['foo1': 'bar1']]]]
         def path = 'foo["cose"][\'foo\']["foo1"]'
         navigate(map,path,'bar1',map)
@@ -144,17 +144,16 @@ class PathWalkerTest {
         def map = ['foo': ['cose': ['foo': ['foo1': 'bar1']]]]
         def path = 'foo.cose.foo.foo1.coo'
         navigate(map,path,null,map)
-        //navigateWithException(map,path)
     }
 
     @Test
-    public void testQuestionMarkk() {
+    public void testQuestionMark() {
         def map = ['foo': ['cose': ['foo': ['foo1': 'bar1']]]]
         def path = 'foo.cose.foo?.foo1'
         navigate(map, path, 'bar1',map)
     }
     @Test
-    public void testQuestionMArkNotExistingKey() {
+    public void testQuestionMarkNotExistingKey() {
         def map = ['foo': ['cose': ['foo': ['foo1': 'bar1']]]]
         def path = 'foo.cose.fo?.foo1'
         navigate(map, path, null,map)
@@ -193,13 +192,6 @@ class PathWalkerTest {
         def path = 'payload.a.b.c.bytes'
         navigate(null,path,'[B@6b26e945',map,false)
     }
-/*
-    @Test
-    public void testPlainScopeCASEINSENSITIVE() {
-        def map = ['payload':['a': ['b': ['c': "prova"]]],'var':'foo1']
-        def path = 'payload.a.b.c.CASE_INSENSITIVE_ORDER'
-        navigate(null,path,'[B@794cb805',map)
-    }*/
 
     @Test
     public void testPlainScopeValues() {
@@ -304,28 +296,64 @@ class PathWalkerTest {
         assertFalse(supported)
     }
 
-    public void navigateWithException(def item, String path,def scope) {
+    @Test
+    public void testPlainXml(){
+        XmlNode node = new XmlNode(new XmlSlurper().parse(new File('stuff2.xml')))
+        def path = 'a.b.c'
+        navigate(node,path,node.a.b.c,node)
+    }
+
+    @Test
+    public void testPlainXmlAttribute(){
+        XmlNode node = new XmlNode(new XmlSlurper().parse(new File('stuff2.xml')))
+        def path = 'a.@e'
+        navigate(node,path,'ebar',node)
+    }
+
+    @Test
+    public void testPlainXmlText(){
+        XmlNode node = new XmlNode(new XmlSlurper().parse(new File('stuff2.xml')))
+        def path = 'a.b.c.text'
+        navigate(node,path,'bar1',node)
+    }
+
+    @Test
+    public void testComplexXml(){
+        XmlNode node = new XmlNode(new XmlSlurper().parse(new File('cardigan.xml')))
+        def path = 'product[0].size[0]'
+        navigate(node,path,node.product[0].size[0],node)
+    }
+
+    @Test
+    public void testComplexXmlAttribute(){
+        XmlNode node = new XmlNode(new XmlSlurper().parse(new File('cardigan.xml')))
+        def path = 'product[0].size[0].@description'
+        navigate(node,path,'Medium',node)
+    }
+
+    private void navigateWithException(def item, String path,def scope) {
         printInformations(item, null, path)
         String element = GroovyPathWalker.walk(path,scope,item)
         println "Result: " + element
         assertTrue(element.startsWith("Exception") || element.startsWith("No signature"))
     }
 
-    public void navigate(def item, def path, def expected, def scope,def test = true) {
+
+    private void navigate(def item, def path, def expected, def scope,def test = true) {
         printInformations(item, scope, path)
         def element = GroovyPathWalker.walk(path,scope,item)
         println "Result: " + element
         if (test) assertEquals(expected,element)
     }
 
-    public void navigateDecimal(def item, def path, def expected, def scope,def test = true) {
+    private void navigateDecimal(def item, def path, def expected, def scope,def test = true) {
         printInformations(item, scope, path)
         def element = GroovyPathWalker.walk(path,scope,item)
         println "Result: " + element
         if (test) assertEquals(expected,element,0)
     }
 
-    public void navigateRandomValues(def item, String path, def valuesList, def scope) {
+    private void navigateRandomValues(def item, String path, def valuesList, def scope) {
         printInformations(item, scope, path)
         def element = GroovyPathWalker.walk(path,scope,item)
         def valuesIn = true
@@ -337,13 +365,20 @@ class PathWalkerTest {
     }
 
     private void printInformations(item, scope, def path) {
-        println "************************"
-        println "Item: " + (JsonOutput.toJson(item))
-        println "Scope: " + (JsonOutput.toJson(scope))
-        println "Path: " + path
+        if (scope instanceof XmlNode && item instanceof XmlNode) {
+            println "************************"
+            println "Item: " + item
+            println "Scope: " + scope
+            println "Path: " + path
+        } else {
+            println "************************"
+            println "Item: " + (JsonOutput.toJson(item))
+            println "Scope: " + (JsonOutput.toJson(scope))
+            println "Path: " + path
+        }
     }
 
-    public void initMetaclasses(){
+    private void initMetaclasses(){
         ArrayList.metaClass.pick { Integer q ->
             int quantity = q ?: 1
             int total = delegate.size();
