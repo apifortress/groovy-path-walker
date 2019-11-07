@@ -6,6 +6,8 @@ import groovy.json.internal.LazyMap
 import groovy.util.slurpersupport.GPathResult
 import org.junit.Test
 
+import java.lang.reflect.Field
+
 import static org.junit.Assert.*
 
 class PathWalkerTest {
@@ -317,6 +319,8 @@ class PathWalkerTest {
         navigate(node,path,'bar1',node)
     }
 
+
+
     @Test
     public void testComplexXml(){
         XmlNode node = new XmlNode(new XmlSlurper().parse(new File('cardigan.xml')))
@@ -329,6 +333,27 @@ class PathWalkerTest {
         XmlNode node = new XmlNode(new XmlSlurper().parse(new File('cardigan.xml')))
         def path = 'product[0].size[0].@description'
         navigate(node,path,'Medium',node)
+    }
+
+    @Test
+    public void testComplexXmlItemNumber(){
+        XmlNode node = new XmlNode(new XmlSlurper().parse(new File('cardigan.xml')))
+        def path = 'product[0].item_number'
+        navigate(node,path,node.product[0].item_number,node)
+    }
+
+    @Test
+    public void testGenericObjectGet(){
+        def obj = new TestObject()
+        def path = 'test'
+        navigate(obj,path,'foobar: test',obj)
+    }
+
+    @Test
+    public void testGenericWithoutObjectGet(){
+        def obj = new TestObjectWithOutGet()
+        def path = 'test'
+        navigateWithException(obj,path,obj)
     }
 
     private void navigateWithException(def item, String path,def scope) {

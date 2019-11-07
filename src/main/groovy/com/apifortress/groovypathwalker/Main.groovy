@@ -39,6 +39,11 @@ class Main {
         temp = GroovyPathWalker.walk(path,node,node)
         println temp
 
+        node = new XmlNode(new XmlSlurper().parse(new File('cardigan.xml')))
+        print(node.product[0].size[0])
+        path = 'product[0].item_number'
+        temp = GroovyPathWalker.walk(path,node,node)
+        println temp
 
 
     }

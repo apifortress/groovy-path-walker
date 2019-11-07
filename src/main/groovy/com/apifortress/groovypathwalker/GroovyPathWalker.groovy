@@ -233,10 +233,12 @@ class GroovyPathWalker {
         def methodPrefix = ""
         def methodName = p
         def result = null
+        //if xmlnode method names does not start with get
         if (!(item instanceof XmlNode)) {
             methodPrefix = "get"
             methodName = methodPrefix + p.capitalize()
         }
+
         //retieves properties
         Field[] fields = item.getClass().getFields()
         String[] fieldsNames = fields.collect{it.getName()}
@@ -256,6 +258,14 @@ class GroovyPathWalker {
             result = method.invoke(item, new Object[0]);
 
         }
+
+        if (!result)
+            try {
+                result = item.get(p)
+            } catch (Exception e) {
+                result = e.getMessage()
+            }
+
         return result
     }
 }
