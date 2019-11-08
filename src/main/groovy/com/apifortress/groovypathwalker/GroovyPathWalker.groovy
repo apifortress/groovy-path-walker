@@ -263,7 +263,8 @@ class GroovyPathWalker {
             try {
                 result = item.get(p)
             } catch (Exception e) {
-                result = e.getMessage()
+                //result = e.getMessage()
+                result = null
             }
 
         return result

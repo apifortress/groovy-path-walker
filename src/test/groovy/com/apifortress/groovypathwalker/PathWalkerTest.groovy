@@ -353,7 +353,8 @@ class PathWalkerTest {
     public void testGenericWithoutObjectGet(){
         def obj = new TestObjectWithOutGet()
         def path = 'test'
-        navigateWithException(obj,path,obj)
+        navigate(obj,path,null,obj)
+        //navigateWithException(obj,path,obj)
     }
 
     private void navigateWithException(def item, String path,def scope) {
