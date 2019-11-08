@@ -4,47 +4,10 @@ import com.apifortress.parsers.xmlparser2.XmlNode
 
 class Main {
     public static void main(String[] args) {
-        XmlNode node
-        def path
-        def temp
-        //XmlNode node = new XmlNode(new XmlSlurper().parse(new File('catalog.xml')))
-        //def path = 'CATALOG[1].TITLE'
-        //def temp = GroovyPathWalker.walk(path,node,node)
-        /*println temp
-
-        node = new XmlNode(new XmlSlurper().parse(new File('breakfast.xml')))
-        path = 'breakfast_menu.food.description.price'
-        temp = GroovyPathWalker.walk(path,node,node)
-        println temp*/
-
-        node = new XmlNode(new XmlSlurper().parse(new File('stuff2.xml')))
-        path = 'a.b.c'
-        temp = GroovyPathWalker.walk(path,node,node)
-        println temp
-
-        /*
-        path = 'a.b.c.text'
-        temp = GroovyPathWalker.walk(path,node,node)
-        println temp
-
-        //path = 'a.@e'
-        path = "a['@e']"
-        temp = GroovyPathWalker.walk(path,node,node)
-        println temp*/
-
-
-        node = new XmlNode(new XmlSlurper().parse(new File('cardigan.xml')))
-        print(node.product[0].size[0])
-        path = 'product[0].size[0]'
-        temp = GroovyPathWalker.walk(path,node,node)
-        println temp
-
-        node = new XmlNode(new XmlSlurper().parse(new File('cardigan.xml')))
-        print(node.product[0].size[0])
-        path = 'product[0].item_number'
-        temp = GroovyPathWalker.walk(path,node,node)
-        println temp
-
+        def map = ['payload':['a': ['b': ['c': ['foo1': 'bar1']]]],'var':'foo1']
+        def path = 'payload.a.b.c.size()'
+        def element = GroovyPathWalker.walk(path,map,map)
+        println element
 
     }
 }

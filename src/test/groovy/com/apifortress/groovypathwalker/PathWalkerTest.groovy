@@ -185,7 +185,7 @@ class PathWalkerTest {
     public void testPlainScopeSize() {
         def map = ['payload':['a': ['b': ['c': ['foo1': 'bar1']]]],'var':'foo1']
         def path = 'payload.a.b.c.size()'
-        navigate(null,path,'1',map)
+        navigate(null,path,1,map)
     }
 
     @Test
@@ -199,14 +199,16 @@ class PathWalkerTest {
     public void testPlainScopeValues() {
         def map = ['payload':['a': ['b': ['c': ['foo1': 'bar1']]]],'var':'foo1']
         def path = 'payload.a.b.c.values()'
-        navigate(null,path,'[bar1]',map)
+        def element = map.payload.a.b.c.values()
+        navigate(null,path,element,map)
     }
 
     @Test
     public void testPlainScopeKeySet() {
         def map = ['payload':['a': ['b': ['c': ['foo1': 'bar1']]]],'var':'foo1']
         def path = 'payload.a.b.c.keySet()'
-        navigate(null,path,'[foo1]',map)
+        def element = map.payload.a.b.c.keySet()
+        navigate(null,path,element,map)
     }
 
     @Test
