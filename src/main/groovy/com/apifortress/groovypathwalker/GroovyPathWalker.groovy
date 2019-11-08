@@ -172,7 +172,7 @@ class GroovyPathWalker {
                 break
                 defaul: break;
         }
-        return item.toString()
+        return item
     }
 
     /**
