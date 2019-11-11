@@ -158,6 +158,13 @@ class PathWalkerTest {
     }
 
     @Test
+    public void testSafeNavigation3(){
+        def map = [a:[1,2,3],b:[c:true]]
+        def path = 'data?.b?.c'
+        navigate(map,path,null,map)
+    }
+
+    @Test
     public void testSafeNavigation2(){
         def map = [data:[a:[1,2,3],b:null]]
         def path = 'data.b?.c'
