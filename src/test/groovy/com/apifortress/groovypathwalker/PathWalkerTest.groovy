@@ -11,6 +11,8 @@ import java.lang.reflect.Field
 import static org.junit.Assert.*
 
 class PathWalkerTest {
+
+
     @Test
     public void testString() {
         def map = ['payload':['foo': ['cose': ['foo': ['foo1': 'bar1']]]]]
@@ -146,6 +148,13 @@ class PathWalkerTest {
         def map = ['foo': ['cose': ['foo': ['foo1': 'bar1']]]]
         def path = 'foo.cose.foo.foo1.coo'
         navigate(map,path,null,map)
+    }
+
+    @Test
+    public void testSafeNavigation(){
+        def map = [data:[a:[1,2,3],b:[c:true]]]
+        def path = 'data.b?.c'
+        navigate(null,path,true,map)
     }
 
     @Test
