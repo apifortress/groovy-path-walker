@@ -53,8 +53,11 @@ class GroovyPathWalker {
             else if (p.matches(Regex.REGEX_FUNC))
                 item = processFunction(p, item)
             //otherwise plain accessor
-            else
+            else {
                 item = processPlain(item, p)
+                if (p.endsWith('?'))
+                    if (item == null) return null
+            }
         }
 
         return item
@@ -68,6 +71,8 @@ class GroovyPathWalker {
      */
     private static def processPlain(def item, String p) {
         boolean stop = false
+        if (p.endsWith('?'))
+            p = p.substring(0, p.length() - 1)
         //if it's map or list get the value. If map the result is guaranteed, if list and support get method then result is guaranteed else exception wil be thrown
         if (item instanceof Map || item instanceof List || item instanceof  XmlNode) {
             def temp = item
@@ -213,7 +218,6 @@ class GroovyPathWalker {
         //everything starting with a square bracket is a part of the path
         //so we replace the opena square brack with dot square bracket
         path = path.replaceAll('\\[','.[')
-        path = path.replaceAll('\\?', '')
         //if starting with list the first element is square bracketed, so we remove the first dot
         if (path.startsWith('.')) path = path.substring(1)
         //finally splitting the path

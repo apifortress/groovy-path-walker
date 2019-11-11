@@ -154,12 +154,21 @@ class PathWalkerTest {
         def path = 'foo.cose.foo?.foo1'
         navigate(map, path, 'bar1',map)
     }
+
+    @Test
+    public void testQuestionMarkNullFunction() {
+        def map = ['foo': ['cose': ['foo': null]]]
+        def path = 'foo.cose.foo?.size()'
+        navigate(map, path, null,map)
+    }
+
     @Test
     public void testQuestionMarkNotExistingKey() {
         def map = ['foo': ['cose': ['foo': ['foo1': 'bar1']]]]
         def path = 'foo.cose.fo?.foo1'
         navigate(map, path, null,map)
     }
+
     @Test
     public void testVariable() {
         def map = ['a': ['b': ['c': ['d': 'bar1']]]]
