@@ -12,7 +12,13 @@ import static org.junit.Assert.*
 
 class PathWalkerTest {
 
-
+    @Test(expected = groovy.lang.MissingMethodException.class)
+    public void testCosaStrana() {
+        def map = ['payload':['a': ['b': ['c': 'foo']]],'var':'foo1']
+        def path = 'payload.a.b.c.d'
+        def element = GroovyPathWalker.walk(path,map,map)
+        println "Result: " + element
+    }
     @Test
     public void testString() {
         def map = ['payload':['foo': ['cose': ['foo': ['foo1': 'bar1']]]]]
@@ -44,12 +50,12 @@ class PathWalkerTest {
         navigate(map,path,'bar1',map)
     }
 
-    @Test
+    @Test(expected = groovy.lang.MissingMethodException.class)
     public void testListStringAccessorList() {
         def map = ['foo': ['a','b','c']]
         def path = 'foo[\'a\']'
-        //navigate(map,path,'bar1')
-        navigateWithException(map,path,map)
+        navigate(map,path,'bar1')
+        //navigateWithException(map,path,map)
     }
     @Test
     public void testListAtStart() {
@@ -63,26 +69,26 @@ class PathWalkerTest {
         def path = '[1]'
         navigate(map,path,'2',map)
     }
-    @Test
+    @Test(expected = groovy.lang.MissingMethodException.class)
     public void testListDoubleQuote() {
         def map = ['1', '2', '3', '4', '5']
         def path = '["1"]'
-        //navigate(map,path,'2')
-        navigateWithException(map,path,map)
+        navigate(map,path,'2')
+        //navigateWithException(map,path,map)
     }
-    @Test
+    @Test(expected = groovy.lang.MissingMethodException.class)
     public void testListSingleQuote() {
         def map = ['foo':['1', '2', '3', '4', '5']]
         def path = 'foo[\'1\']'
-        //navigate(map,path,'2')
-        navigateWithException(map,path,map)
+        navigate(map,path,'2')
+        //navigateWithException(map,path,map)
     }
-    @Test
+    @Test(expected = groovy.lang.MissingMethodException.class)
     public void testAccessorListDoubleQuote() {
         def map = ['foo':['1', '2', '3', '4', '5']]
         def path = 'foo["1"]'
-        //navigate(map,path,'2')
-        navigateWithException(map,path,map)
+        navigate(map,path,'2')
+        //navigateWithException(map,path,map)
     }
 
     @Test
@@ -115,11 +121,12 @@ class PathWalkerTest {
         def path = "foo.cose.foo['foo1']"
         navigate(map,path,'bar1',map)
     }
-    @Test
+    @Test(expected = groovy.lang.MissingMethodException.class)
     public void testListAtTheEndSingleQuote() {
         def map = ['foo': ['cose': ['foo': ['a', 'b', 'c']]]]
         def path = 'foo.cose.foo[\'a\']'
-        navigateWithException(map,path,map)
+        navigate(map,path,'bar1',map)
+        //navigateWithException(map,path,map)
     }
 
     @Test
@@ -143,7 +150,7 @@ class PathWalkerTest {
         navigate(map,path,'bar1',map)
     }
 
-    @Test
+    @Test(expected = groovy.lang.MissingMethodException.class)
     public void testNotExistingEndingKey() {
         def map = ['foo': ['cose': ['foo': ['foo1': 'bar1']]]]
         def path = 'foo.cose.foo.foo1.coo'
@@ -383,7 +390,7 @@ class PathWalkerTest {
         navigate(obj,path,'foobar: test',obj)
     }
 
-    @Test
+    @Test(expected = groovy.lang.MissingMethodException.class)
     public void testGenericWithoutObjectGet(){
         def obj = new TestObjectWithOutGet()
         def path = 'test'
@@ -398,7 +405,7 @@ class PathWalkerTest {
         assertTrue(element.startsWith("Exception") || element.startsWith("No signature"))
     }
 
-
+    //@Test(expected = NullPointerException.class)
     private void navigate(def item, def path, def expected, def scope,def test = true) {
         printInformations(item, scope, path)
         def element = GroovyPathWalker.walk(path,scope,item)

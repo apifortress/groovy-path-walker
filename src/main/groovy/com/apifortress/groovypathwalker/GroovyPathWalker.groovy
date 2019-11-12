@@ -116,18 +116,10 @@ class GroovyPathWalker {
 
         //if item is a map then get the element
         if (item instanceof Map || item instanceof List || (item instanceof XmlNode && !(p instanceof Integer))) {
-            try {
                 item = item.get(p)
-            } catch (Exception e) {
-                item = e.getMessage()
-            }
         }
         else if (item instanceof XmlNode && p instanceof Integer) {
-            try {
                 item = item.getAt(p)
-            } catch (Exception e) {
-                item = e.getMessage()
-            }
         }
         return item
     }
@@ -264,12 +256,7 @@ class GroovyPathWalker {
         }
 
         if (!result)
-            try {
-                result = item.get(p)
-            } catch (Exception e) {
-                //result = e.getMessage()
-                result = null
-            }
+            result = item.get(p)
 
         return result
     }
