@@ -70,7 +70,7 @@ class GroovyPathWalker {
      * @return
      */
     private static def processPlain(def item, String p) {
-        boolean stop = false
+        boolean nullProtected = false
         if (p.endsWith('?'))
             p = p.substring(0, p.length() - 1)
         //if it's map or list get the value. If map the result is guaranteed, if list and support get method then result is guaranteed else exception wil be thrown
@@ -81,9 +81,10 @@ class GroovyPathWalker {
                 item = byReflection(temp, p)
             }
             // if it's generic object let's try using reflection.
-        } else if (item instanceof Object)
+        } else if (item instanceof Object) {
             item = byReflection(item, p)
-
+        } else if (item == null && !nullProtected)
+            item = item.get(p)
 
         return item
     }
