@@ -12,6 +12,20 @@ import static org.junit.Assert.*
 
 class PathWalkerTest {
 
+    @Test(expected = groovy.lang.MissingMethodException.class)
+    public void testCosaStrana5() {
+        def map = [payload:[a:true]]
+        def path = 'payload.a[\'c\']'
+        navigate(null,path,null,map)
+    }
+
+    @Test(expected = groovy.lang.MissingMethodException.class)
+    public void testCosaStrana4() {
+        def map = [payload:[a:true]]
+        def path = 'payload.a.ciccio'
+        navigate(null,path,null,map)
+    }
+
     @Test
     public void testCosaStrana3() {
         def map = [payload:[a:22]]

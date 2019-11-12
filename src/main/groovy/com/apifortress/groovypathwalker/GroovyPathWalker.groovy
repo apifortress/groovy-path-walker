@@ -99,7 +99,6 @@ class GroovyPathWalker {
      */
     private static def processSquared(def p, item, scope) {
         p = p.substring(p.indexOf('[') + 1, p.indexOf(']'))
-
         //get value between quotes or double quotes it is always an accessor
         if (p.startsWith('\'') && p.endsWith('\'') || p.startsWith('"') && p.endsWith('"'))
             p = p.substring(1, p.length() - 1)
@@ -117,10 +116,17 @@ class GroovyPathWalker {
 
         //if item is a map then get the element
         if (item instanceof Map || item instanceof List || (item instanceof XmlNode && !(p instanceof Integer))) {
-                item = item.get(p)
+            def temp = item
+            item = item.get(p)
+            if (temp instanceof  XmlNode && !item) {
+                item = byReflection(temp, p)
+            }
         }
         else if (item instanceof XmlNode && p instanceof Integer) {
                 item = item.getAt(p)
+        }
+        else if (item instanceof Object) {
+            item = byReflection(item, p)
         }
         return item
     }
